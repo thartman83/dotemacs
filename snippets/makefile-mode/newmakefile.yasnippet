@@ -1,0 +1,36 @@
+# -*- mode: snippet -*-
+# name: newmakefile 
+# key: newmakefile
+# --
+CXX=g++
+OPTS=-Wall -02 -g
+SRC_DIR=src
+BIN_DIR=bin
+
+vpath %.cc \$SRC_DIR
+vpath %.hh \$SRC_DIR
+
+SRC_FILES=main.cc
+OBJS=$(patsubst %.cc,\$BIN_DIR/%.o, \$SRC_FILES)
+LDLIBS=
+LDFLAGS=
+
+.PHONY: clean tests all
+
+all: $1 tests TAGS
+
+TAGS: *.cc *.hh
+			etags --members --declarations -l c++ \$<
+
+$1: \$OBJS
+		\$CXX \$OPTS -o \$BIN_DIR/$1 $LDLIBS
+
+\$OBJS/%.o: %.cc
+	  echo \$<
+		\$CXX \$OPTS -c \$< -O \$@ \$LDFLAGS
+
+tests:
+		\$(MAKE) -C tests
+
+clean:
+		rm \$OBJ_DIR/*

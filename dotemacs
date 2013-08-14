@@ -1,0 +1,219 @@
+;;;;;;;;;;;;;
+;; Startup ;;
+;;;;;;;;;;;;;
+
+;; Hulk smash puny scroll and menu bars...
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(tool-bar-mode -1)
+
+;; Got directly to scratch buffer, do not pass go
+(setq inhibit-startup-mesage t)
+(setq initial-scratch-message nil)
+(put 'erase-buffer 'disabled nil)
+
+;;;;;;;;;;;;;;
+;; Packages ;;
+;;;;;;;;;;;;;;
+;; Make sure 'local' packages are available as well
+(add-to-list 'load-path "~/.emacs.d/local-packages")
+(require 'personal)
+
+(require 'package)
+(require 'package-helper)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			 ("marmalade" . "http://marmalade-repo.org/packages/")
+			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+(package-initialize)
+
+;; slime
+(with-package slime
+  (setq inferior-lisp-program "/usr/bin/sbcl")
+	(add-hook 'lisp-mode-hook '(lambda () (slime-mode)))
+  (slime-setup '(slime-repl slime-fuzzy)))
+
+;; paredit
+(with-package paredit-autoloads
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+  (add-hook 'lisp-mode-hook 'paredit-mode)
+  (add-hook 'scheme-mode-hook 'paredit-mode)
+  (add-hook 'ielm-mode-hook 'paredit-mode))
+
+(with-package paredit
+  (when (not (display-graphic-p))
+    (define-key paredit-mode-map (kbd ",") 'paredit-backward-slurp-sexp)
+    (define-key paredit-mode-map (kbd ".") 'paredit-forward-slurp-sexp)))
+
+;; parenface
+(when (display-graphic-p)
+  (with-package* parenface
+    (set-face-foreground 'paren-face "Gray30")))
+
+;; ielm
+(with-package ielm
+  (defadvice ielm-eval-input (after ielm-paredit activate)
+    "Begin each ielm prompt with a paredit pair."
+    (paredit-open-round)))
+
+;; paren-mode
+(with-package* paren
+  (show-paren-mode))
+
+;; yasnippet
+(with-package* yasnippet
+	(yas-global-mode 1) 
+	(setq yas/root-directory '("~/.emacs.d/snippets"))
+	(mapc #'yas/load-directory yas/root-directory))
+
+(with-package* flycheck
+	(add-hook 'after-init-hook #'global-flycheck-mode))
+
+;; local packages ;;
+(require 'file-utils)
+(require 'string-utils)
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Custom Mode Line ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+;; Custom Mode line, mostly stolen from:
+;; https://www.cs.elte.hu/local/texinfo/elisp-intro/emacs-lisp-intro_205.html
+;; Grabs and formats current computer name
+(setq mode-line-system-identification
+      (substring (system-name) 0
+		 (string-match "\\..+" (system-name))))
+
+;; For whatever reason the home directory doesn't shorten to ~/
+(setq mode-line-cwd
+      (let ((username (getenv "USER")) (homelen (+ 6 (length (getenv "USER")))))
+	(if (and (>= (length default-directory) homelen)
+		 (string= (substring default-directory 0 homelen)
+			  (concat "/home/" username)))
+	    (concat "~/" (substring default-directory (+ 1 homelen) nil))
+	  default-directory)))
+
+(defun get-pwd ()
+  (interactive)
+  (let ((str (replace-regexp-in-string (concat "/home/" (getenv "USER") "/")
+				       "~/" default-directory))
+	(len 10))
+    (if (> (length str) len)
+	(concat (substring str 0 (- (/ len 2) 2)) 
+		"..." (substring str (+ (/ len 2) 1)))
+      str)))
+
+;; Sets the mode line to be: 
+;; < Computer name> Current Buffer (Major-Mode,minor-modes)--Line X,Col Y--Prec
+(setq default-mode-line-format
+      (list "" 'mode-line-modified "< " 'mode-line-system-identification ":" 
+	    " >" " %6b " "%[(" 'mode-name 'minor-mode-alist "%n" 
+	    'mode-line-process ")%]--" "Line %l,Col %c--" '(-3 . "%P") "-%-"))
+
+;; Set it to be the current buffer mode line format
+(setq mode-line-format default-mode-line-format)
+
+;;;;;;;;;;;;;;;;
+;; Mode Hooks ;;
+;;;;;;;;;;;;;;;;
+
+;;add a hook to make sure autofill it on (text-wrapping)
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+;;add a hook to tear down shells when emacs is being closed
+(add-hook 'shell-mode-hook
+					#'(lambda ()
+							(let ((p (get-buffer-process (current-buffer))))
+								(if (processp p)
+										(process-kill-without-query p)))))
+
+;;Always used c++ mode pren style
+(add-hook 'c-mode-hook '(lambda () (c-set-style "ellemtel")))
+(add-hook 'c++-mode-hook '(lambda () (c-set-style "ellemtel")))
+(add-hook 'java-mode-hook '(lambda () (c-set-style "ellemtel")))
+
+(add-hook 'c-mode-common-hook 
+	  (lambda()
+	    (set 'c-cleanup-list '(scope-operator
+				   brace-elseif-braces
+				   empty-defun-braces
+				   defun-close-semi
+				   list-close-comma
+				   brace-catch-braces
+				   space-before-funcall))
+	    (set 'c-hanging-braces-alist '((substatement-open . after)))
+	    (set 'c-echo-syntactic-information-p t)
+	    (set 'c-tab-always-indent t)
+	    (set 'c-comment-only-line-offset 4)))
+
+;; Qt specific c++ language extensions
+
+(font-lock-add-keywords 'c++-mode
+			'(("\\<Q_OBJECT\\>" . 'qt-keywords-face)))
+(font-lock-add-keywords 'c++-mode
+			'(("\\<SIGNAL\\|SLOT\\>" . 'qt-keywords-face)))
+(font-lock-add-keywords 'c++-mode
+			'(("\\<Q[A-Z][A-Za-z]*" . 'qt-keywords-face)))
+
+(load "cc-mode")
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Customize Keymap ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(define-prefix-command 'personal-map)
+;;C-c is used specifically for users
+(global-set-key "\C-c" personal-map)
+;;setup C-c s to be shell
+(define-key personal-map "s" 'shell)
+;;setup C-c l to be gotoline
+(define-key personal-map "l" 'goto-line)
+;;setup C-c f opens a new window with a file
+(define-key personal-map "f" 'find-file-other-window)
+(define-key personal-map "m" 'compile)
+;; (define-key personal-map [backspace] nil)
+(define-key personal-map "h" 'describe-function)
+(define-key global-map "\C-h" 'backward-delete-char)
+
+(define-key personal-map "r" 'replace-string)
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max))))
+
+(define-key personal-map "i" 'indent-buffer)
+
+;; For some reason I find myself holding the shift key sometimes
+;; and then need to delete, make sure del and shift deletes as well
+(global-set-key [?\C-h] 'delete-backward-char)
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Coloring & Fonts ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(when (display-graphic-p)
+  (set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
+  (set-face-background 'default "black")
+  (set-face-foreground 'default "yellow")
+  (set-face-foreground 'region "white")
+  (set-face-foreground 'region "Navy")
+  (set-face-background 'highlight "forestgreen")
+  (set-face-foreground 'highlight "white")
+  (set-face-foreground 'font-lock-function-name-face "Blue")
+  (set-face-foreground 'font-lock-keyword-face "Purple")
+  (set-face-foreground 'font-lock-constant-face  "Brown")
+  (set-face-foreground 'font-lock-comment-face "Grey")
+  (set-face-foreground 'font-lock-type-face "slateblue")
+  (set-face-foreground 'font-lock-builtin-face "darkblue")
+  (set-face-foreground 'font-lock-string-face  "darkgreen")
+  (set-face-foreground 'font-lock-variable-name-face "Ivory"))
+
+;;;;;;;;;;;;;
+;; Tabbing ;;
+;;;;;;;;;;;;;
+
+(setq-default tab-width 2)
+
+;;;;;;;;;;;;;;;;;;;;
+;; External files ;;
+;;;;;;;;;;;;;;;;;;;;
+(load-library "/home/thartman/projects/testel/testel.el")
