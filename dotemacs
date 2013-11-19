@@ -111,12 +111,12 @@ See URL `http://clang.llvm.org/'."
 			  (option-list "-W" flycheck-clang-warnings s-prepend)
 			  (option-list "-I" flycheck-clang-include-path)
 			  (eval (concat "-I" default-directory))
-			  (eval (when (not (string= flycheck-clang-std ""))
-				  (concat "-std=" flycheck-clang-std)))
+			  ;; (eval (when (not (string= flycheck-clang-std ""))
+				;; 				(concat "-std=" flycheck-clang-std)))
 			  "-x" (eval
-				(cl-case major-mode
-				  (c++-mode "c++")
-				  (c-mode "c"))) source)
+							(cl-case major-mode
+								(c++-mode "c++")
+								(c-mode "c"))) source)
 		:error-patterns
 		((warning line-start (file-name) ":" line ":" column
 			  ": warning: " (message) line-end)
@@ -131,6 +131,11 @@ See URL `http://clang.llvm.org/'."
 	 ;; Your init file should contain only one such instance.
 	 ;; If there is more than one, they won't work right.
 	 '(flycheck-clang-std "c++11")))
+
+(with-package lua
+	(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+	(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+	(add-to-list 'interpreter-mode-alist '("lua" . lua-mode)))
 
 ;; local packages ;;
 (require 'file-utils)
@@ -273,8 +278,8 @@ See URL `http://clang.llvm.org/'."
 ;;;;;;;;;;;;;
 ;; Tabbing ;;
 ;;;;;;;;;;;;;
-
 (setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; External files ;;
