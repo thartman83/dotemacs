@@ -36,7 +36,7 @@
 ;; slime
 (with-package slime
   (setq inferior-lisp-program "/usr/bin/sbcl")
-	(add-hook 'lisp-mode-hook '(lambda () (slime-mode)))
+  (add-hook 'lisp-mode-hook '(lambda () (slime-mode)))
   (slime-setup '(slime-repl slime-fuzzy)))
 
 ;; paredit
@@ -68,74 +68,74 @@
 
 ;; yasnippet
 (with-package* yasnippet
-	(yas-global-mode 1) 
-	(setq yas/root-directory '("~/.emacs.d/snippets"))
-	(mapc #'yas/load-directory yas/root-directory))
+  (yas-global-mode 1) 
+  (setq yas/root-directory '("~/.emacs.d/snippets"))
+  (mapc #'yas/load-directory yas/root-directory))
 
 ;; f
 (with-package* f)
 
 ;; Flycheck
 (with-package* flycheck
-	(add-hook 'after-init-hook #'global-flycheck-mode)
-	;; clang option to set what c/c++ standard to use
-	(flycheck-def-option-var flycheck-clang-std "" c/c++-clang
-		"Which standard of c/c++ to use when invoking clang.
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  ;; clang option to set what c/c++ standard to use
+  (flycheck-def-option-var flycheck-clang-std "" c/c++-clang
+    "Which standard of c/c++ to use when invoking clang.
 
 The value of this variable is a string, which is appended to -std=. Options are
 c89, gnu89, c94, c99, gnu99, c++98 and c++11. Default value is an empty string
 and uses clangs default c or c++ standard (gnu99 or c++98)."
-		:type '(choice (const :tag "Clang default" "")
-			       (const :tag "c89 standard" "c89")
-			       (const :tag "gnu89 standard" "gnu89")
-			       (const :tag "c94 standard" "c94")
-			       (const :tag "c99 standard" "c99")
-			       (const :tag "gnu99 standard" "gnu99")
-			       (const :tag "c++98 standard" "c++98")
-			       (const :tag "c++11 standard" "c++11"))
-		:safe #'stringp
-		:package-version '(flycheck . "0.14"))
-	;; slightly modified version of c/c++-clang to allow for change which c/c++ standard 
-	;; to use as well as always including the local directory as an include path	
-	(flycheck-define-checker c/c++-clang
-		"A C/C++ syntax checker using Clang.
+    :type '(choice (const :tag "Clang default" "")
+             (const :tag "c89 standard" "c89")
+             (const :tag "gnu89 standard" "gnu89")
+             (const :tag "c94 standard" "c94")
+             (const :tag "c99 standard" "c99")
+             (const :tag "gnu99 standard" "gnu99")
+             (const :tag "c++98 standard" "c++98")
+             (const :tag "c++11 standard" "c++11"))
+    :safe #'stringp
+    :package-version '(flycheck . "0.14"))
+  ;; slightly modified version of c/c++-clang to allow for change which c/c++ standard 
+  ;; to use as well as always including the local directory as an include path  
+  (flycheck-define-checker c/c++-clang
+    "A C/C++ syntax checker using Clang.
 
 See URL `http://clang.llvm.org/'."
-		:command ("clang"
-			  "-fsyntax-only"
-			  "-fno-color-diagnostics"    ; Do not include color codes in output
-			  "-fno-caret-diagnostics"    ; Do not visually indicate the source
+    :command ("clang"
+        "-fsyntax-only"
+        "-fno-color-diagnostics"    ; Do not include color codes in output
+        "-fno-caret-diagnostics"    ; Do not visually indicate the source
                                         ; location
-			  "-fno-diagnostics-show-option" ; Do not show the corresponding
+        "-fno-diagnostics-show-option" ; Do not show the corresponding
                                         ; warning group
-			  (option-list "-W" flycheck-clang-warnings s-prepend)
-			  (option-list "-I" flycheck-clang-include-path)
-			  (eval (concat "-I" default-directory))
-			  ;; (eval (when (not (string= flycheck-clang-std ""))
-				;; 				(concat "-std=" flycheck-clang-std)))
-			  "-x" (eval
-							(cl-case major-mode
-								(c++-mode "c++")
-								(c-mode "c"))) source)
-		:error-patterns
-		((warning line-start (file-name) ":" line ":" column
-			  ": warning: " (message) line-end)
-		 (error line-start (file-name) ":" line ":" column
-			": " (or "fatal error" "error") ": " (message) line-end))
-		:modes (c-mode c++-mode)
-		:next-checkers ((warnings-only . c/c++-cppcheck)))
-	;; always default to the new c++ standard for parsing
-	(custom-set-variables
-	 ;; custom-set-variables was added by Custom.
-	 ;; If you edit it by hand, you could mess it up, so be careful.
-	 ;; Your init file should contain only one such instance.
-	 ;; If there is more than one, they won't work right.
-	 '(flycheck-clang-std "c++11")))
+        (option-list "-W" flycheck-clang-warnings s-prepend)
+        (option-list "-I" flycheck-clang-include-path)
+        (eval (concat "-I" default-directory))
+        ;; (eval (when (not (string= flycheck-clang-std ""))
+        ;;        (concat "-std=" flycheck-clang-std)))
+        "-x" (eval
+              (cl-case major-mode
+                (c++-mode "c++")
+                (c-mode "c"))) source)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column
+        ": warning: " (message) line-end)
+     (error line-start (file-name) ":" line ":" column
+      ": " (or "fatal error" "error") ": " (message) line-end))
+    :modes (c-mode c++-mode)
+    :next-checkers ((warnings-only . c/c++-cppcheck)))
+  ;; always default to the new c++ standard for parsing
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(flycheck-clang-std "c++11")))
 
 (with-package lua
-	(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
-	(add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-	(add-to-list 'interpreter-mode-alist '("lua" . lua-mode)))
+  (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+  (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+  (add-to-list 'interpreter-mode-alist '("lua" . lua-mode)))
 
 ;; local packages ;;
 (require 'file-utils)
@@ -150,33 +150,33 @@ See URL `http://clang.llvm.org/'."
 ;; Grabs and formats current computer name
 (setq mode-line-system-identification
       (substring (system-name) 0
-		 (string-match "\\..+" (system-name))))
+     (string-match "\\..+" (system-name))))
 
 ;; For whatever reason the home directory doesn't shorten to ~/
 (setq mode-line-cwd
       (let ((username (getenv "USER")) (homelen (+ 6 (length (getenv "USER")))))
-	(if (and (>= (length default-directory) homelen)
-		 (string= (substring default-directory 0 homelen)
-			  (concat "/home/" username)))
-	    (concat "~/" (substring default-directory (+ 1 homelen) nil))
-	  default-directory)))
+  (if (and (>= (length default-directory) homelen)
+     (string= (substring default-directory 0 homelen)
+        (concat "/home/" username)))
+      (concat "~/" (substring default-directory (+ 1 homelen) nil))
+    default-directory)))
 
 (defun get-pwd ()
   (interactive)
   (let ((str (replace-regexp-in-string (concat "/home/" (getenv "USER") "/")
-				       "~/" default-directory))
-	(len 10))
+               "~/" default-directory))
+  (len 10))
     (if (> (length str) len)
-	(concat (substring str 0 (- (/ len 2) 2)) 
-		"..." (substring str (+ (/ len 2) 1)))
+  (concat (substring str 0 (- (/ len 2) 2)) 
+    "..." (substring str (+ (/ len 2) 1)))
       str)))
 
 ;; Sets the mode line to be: 
 ;; < Computer name> Current Buffer (Major-Mode,minor-modes)--Line X,Col Y--Prec
 (setq default-mode-line-format
       (list "" 'mode-line-modified "< " 'mode-line-system-identification ":" 
-	    " >" " %6b " "%[(" 'mode-name 'minor-mode-alist "%n" 
-	    'mode-line-process ")%]--" "Line %l,Col %c--" '(-3 . "%P") "-%-"))
+      " >" " %6b " "%[(" 'mode-name 'minor-mode-alist "%n" 
+      'mode-line-process ")%]--" "Line %l,Col %c--" '(-3 . "%P") "-%-"))
 
 ;; Set it to be the current buffer mode line format
 (setq mode-line-format default-mode-line-format)
@@ -189,10 +189,10 @@ See URL `http://clang.llvm.org/'."
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 ;;add a hook to tear down shells when emacs is being closed
 (add-hook 'shell-mode-hook
-					#'(lambda ()
-							(let ((p (get-buffer-process (current-buffer))))
-								(if (processp p)
-										(process-kill-without-query p)))))
+          #'(lambda ()
+              (let ((p (get-buffer-process (current-buffer))))
+                (if (processp p)
+                    (process-kill-without-query p)))))
 
 ;;Always used c++ mode pren style
 (add-hook 'c-mode-hook '(lambda () (c-set-style "ellemtel")))
@@ -200,27 +200,27 @@ See URL `http://clang.llvm.org/'."
 (add-hook 'java-mode-hook '(lambda () (c-set-style "ellemtel")))
 
 (add-hook 'c-mode-common-hook 
-	  (lambda()
-	    (set 'c-cleanup-list '(scope-operator
-				   brace-elseif-braces
-				   empty-defun-braces
-				   defun-close-semi
-				   list-close-comma
-				   brace-catch-braces
-				   space-before-funcall))
-	    (set 'c-hanging-braces-alist '((substatement-open . after)))
-	    (set 'c-echo-syntactic-information-p t)
-	    (set 'c-tab-always-indent t)
-	    (set 'c-comment-only-line-offset 4)))
+    (lambda()
+      (set 'c-cleanup-list '(scope-operator
+           brace-elseif-braces
+           empty-defun-braces
+           defun-close-semi
+           list-close-comma
+           brace-catch-braces
+           space-before-funcall))
+      (set 'c-hanging-braces-alist '((substatement-open . after)))
+      (set 'c-echo-syntactic-information-p t)
+      (set 'c-tab-always-indent t)
+      (set 'c-comment-only-line-offset 4)))
 
 ;; Qt specific c++ language extensions
 
 (font-lock-add-keywords 'c++-mode
-			'(("\\<Q_OBJECT\\>" . 'qt-keywords-face)))
+      '(("\\<Q_OBJECT\\>" . 'qt-keywords-face)))
 (font-lock-add-keywords 'c++-mode
-			'(("\\<SIGNAL\\|SLOT\\>" . 'qt-keywords-face)))
+      '(("\\<SIGNAL\\|SLOT\\>" . 'qt-keywords-face)))
 (font-lock-add-keywords 'c++-mode
-			'(("\\<Q[A-Z][A-Za-z]*" . 'qt-keywords-face)))
+      '(("\\<Q[A-Z][A-Za-z]*" . 'qt-keywords-face)))
 
 (load "cc-mode")
 
@@ -280,6 +280,7 @@ See URL `http://clang.llvm.org/'."
 ;;;;;;;;;;;;;
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
+(add-hook 'before-save-hook (lambda () (untabify (point-min) (point-max))))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; External files ;;
