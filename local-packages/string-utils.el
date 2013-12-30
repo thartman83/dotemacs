@@ -21,6 +21,8 @@
 
 ;; string-utils --- string utilities
 
+(require 'ht)
+
 (defun comment-lines (str begin-comment &optional end-comment line-len)
   "Return STR with BEGIN-COMMENT starting each line.  Optionally append END-COMMENT
 to the end of each line as well.  If LINE-LEN is specified then END-COMMENT is appended
@@ -57,6 +59,15 @@ Optionally start at index FROM and only return COUNT number of indicies."
           new-str
           (if (= from (1- (length str))) "" (substring str to))))
 
+(defun substringify (str indicies)
+  "Split STR in substrings based on INDICIES.
+
+Indicies is a list of index pairs of substrings."
+  (if (null indicies)
+      nil
+    (cons (substring str (first indicies) (1+ (second indicies)))
+          (substringify str (rest (rest indicies))))))
+
 (defun format-hash (str hash)
   "Replace control sequences in STR with their values within HASH.
 
@@ -82,6 +93,42 @@ and the control sequences lack the colon keyword prefix."
           (setq cur-pos (+ (first indicies) (length (ht-get hash key)))))))
       (setq indicies (find-chars str ?% cur-pos 2)))
     str))
+
+(defun fill-in-gaps (indicies len &optional start)
+  "Fill in the substring gaps in INDICIES for string LEN size at position START."
+  (cond 
+   ((null start)
+    (fill-in-gaps indicies len 0))
+   ((null indicies) (list start (1- len)))
+   (t (let* ((next-pair (if (= start (first indicies))
+                            (list (first indicies) (second indicies))
+                          (list start (1- (first indicies)))))
+             (next-list (if (= start (first indicies))
+                           (rest (rest indicies))
+                         indicies)))
+        (append next-pair (fill-in-gaps next-list len (1+ (second next-pair))))))))
+
+(defun format-hash-functional (str hash)
+  "Replace control sequences in STR with their values within HASH.
+
+Control sequences are surrounded by % and represent keys within HASH.
+For the moment this function assumes that keys with in the HASH are keywords
+and the control sequences lack the colon keyword prefix."  
+  (let ((indicies (find-chars str ?%)))
+    (if (null indicies)
+        str
+      (mapconcat #'(lambda (part)
+                     (cond
+                      ((string= part "") "")
+                      ((string= part "%%") "%")
+                      ((and (= (elt part 0) ?%) (= (elt part (1- (length part))) ?%))
+                       (let ((key (intern (concat ":" (substring part 1 (1- (length part)))))))
+                         (when (not (ht-contains-p hash key))
+                           (error "'%s' is not a key in provided hash table" key))
+                         (ht-get hash key)))                      
+                      (t part)))
+                 (substringify str (fill-in-gaps indicies (length str)))
+                 ""))))
 
 (provide 'string-utils)
 

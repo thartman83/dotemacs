@@ -280,7 +280,9 @@ See URL `http://clang.llvm.org/'."
 ;;;;;;;;;;;;;
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
-(add-hook 'before-save-hook (lambda () (untabify (point-min) (point-max))))
+(add-hook 'before-save-hook (lambda () 
+                              (unless (eq major-mode 'makefile-gmake-mode) 
+                                (untabify (point-min) (point-max)))))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; External files ;;
