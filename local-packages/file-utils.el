@@ -36,8 +36,8 @@ Returns nil if the file does not exist."
       (kill-buffer))))
 
 (defun file-contents (filename)
-	"Return the contents of FILENAME as a string."
-	(with-temp-buffer
+  "Return the contents of FILENAME as a string."
+  (with-temp-buffer
     (insert-file-contents filename)
     (buffer-string)))
 
@@ -51,14 +51,14 @@ Returns nil if the file does not exist."
       (get-random-dir path))))
 
 (defun get-random-string (length)
-	"Return a random string of letters and number of size LENGTH."
+  "Return a random string of letters and number of size LENGTH."
   (let ((chars "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"))
     (if (= length 1)
         (string (elt chars (random (length chars))))
       (concat (string (elt chars (random (length chars)))) (get-random-string (1- length))))))
 
 (defun append-string-into-file (str filename)
-	"Append STR to FILENAME."
+  "Append STR to FILENAME."
   (save-excursion
     (let ((buf (find-file-noselect filename)))
       (set-buffer buf)
@@ -81,14 +81,16 @@ Removes directory and its contents at the end of execution.  Returns the value o
               (when (file-exists-p ,dir)
                (delete-directory ,dir t))))))
 
+(def-edebug-spec with-temporary-dir (body))
+
 (defmacro save-current-directory (&rest body)
-	"Preserve PWD while executing BODY.
+  "Preserve PWD while executing BODY.
 Any change in directory during the course of executing BODY is reverted at the
 end of the block."
-	`(let ((olddir default-directory))
-		 (unwind-protect
-				 ,@body
-			 (cd olddir))))
+  `(let ((olddir default-directory))
+     (unwind-protect
+         ,@body
+       (cd olddir))))
 
 (provide 'file-utils)
 
