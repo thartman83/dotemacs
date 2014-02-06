@@ -9,7 +9,7 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
-;; Got directly to scratch buffer, do not pass go
+;; Goto directly to scratch buffer, do not pass go
 (setq inhibit-startup-mesage t)
 (setq initial-scratch-message nil)
 (put 'erase-buffer 'disabled nil)
@@ -254,27 +254,6 @@ See URL `http://clang.llvm.org/'."
 ;; and then need to delete, make sure del and shift deletes as well
 (global-set-key [?\C-h] 'delete-backward-char)
 
-;;;;;;;;;;;;;;;;;;;;;;
-;; Coloring & Fonts ;;
-;;;;;;;;;;;;;;;;;;;;;;
-
-(when (display-graphic-p)
-  (set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
-  (set-face-background 'default "black")
-  (set-face-foreground 'default "yellow")
-  (set-face-foreground 'region "white")
-  (set-face-foreground 'region "Navy")
-  (set-face-background 'highlight "forestgreen")
-  (set-face-foreground 'highlight "white")
-  (set-face-foreground 'font-lock-function-name-face "Blue")
-  (set-face-foreground 'font-lock-keyword-face "Purple")
-  (set-face-foreground 'font-lock-constant-face  "Brown")
-  (set-face-foreground 'font-lock-comment-face "Grey")
-  (set-face-foreground 'font-lock-type-face "slateblue")
-  (set-face-foreground 'font-lock-builtin-face "darkblue")
-  (set-face-foreground 'font-lock-string-face  "darkgreen")
-  (set-face-foreground 'font-lock-variable-name-face "Ivory"))
-
 ;;;;;;;;;;;;;
 ;; Tabbing ;;
 ;;;;;;;;;;;;;
@@ -296,3 +275,17 @@ See URL `http://clang.llvm.org/'."
  ;; If there is more than one, they won't work right.
  )
 (put 'narrow-to-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("968d1ad07c38d02d2e5debffc5638332696ac41af7974ade6f95841359ed73e3" default)))
+ '(flycheck-clang-std "c++11"))
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; Coloring & Fonts ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+(set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
+(load-theme 'cyberpunk)
