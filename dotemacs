@@ -1,4 +1,4 @@
-;;; -*- mode: Lisp; -*-
+;;; -*- mode: emacs-lisp; mode: Lisp; -*-
 
 ;;;;;;;;;;;;;
 ;; Startup ;;
@@ -52,9 +52,9 @@
     (define-key paredit-mode-map (kbd ".") 'paredit-forward-slurp-sexp)))
 
 ;; parenface
-(when (display-graphic-p)
-  (with-package* parenface
-    (set-face-foreground 'paren-face "Gray30")))
+;; (when (display-graphic-p)
+;;   (with-package* paren-face
+;;     (set-face-foreground 'paren-face "Gray30")))
 
 ;; ielm
 (with-package ielm
@@ -130,16 +130,95 @@ See URL `http://clang.llvm.org/'."
    ;; If you edit it by hand, you could mess it up, so be careful.
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
-   '(flycheck-clang-std "c++11")))
+   '(flycheck-clang-std "c++11"))
+  (setq-default flycheck-emacs-lisp-load-path load-path))
 
 (with-package lua
   (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
   (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
   (add-to-list 'interpreter-mode-alist '("lua" . lua-mode)))
 
+;;;;;;;;;;;;
+;; ggtags ;;
+;;;;;;;;;;;;
+
+;; (require 'ggtags)
+;; (define-key ggtags-mode-map (kbd "C-c g s") 'ggtags-find-other-symbol)
+;; (define-key ggtags-mode-map (kbd "C-c g h") 'ggtags-view-tag-history)
+;; (define-key ggtags-mode-map (kbd "C-c g r") 'ggtags-find-reference)
+;; (define-key ggtags-mode-map (kbd "C-c g f") 'ggtags-find-file)
+;; (define-key ggtags-mode-map (kbd "C-c g c") 'ggtags-create-tags)
+;; (define-key ggtags-mode-map (kbd "C-c g u") 'ggtags-update-tags)
+
+;; (define-key ggtags-mode-map (kbd "M-,") 'pop-tag-mark)
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helm configuration ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(global-set-key (kbd "C-c h") 'helm-command-prefix)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-unset-key (kbd "C-x c"))
+(when (executable-find "curl")
+  (setq helm-google-suggest-use-curl-p t))
+(setq helm-quick-update t
+      helm-split-window-in-side-p t
+      helm-buffers-fuzzy-matching t
+      helm-move-to-line-cycle-in-source t
+      helm-ff-search-in-sexp t
+      helm-scroll-amount 8
+      helm-ff-file-name-histroy-use-recentf t)
+(helm-mode 1)
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-z") 'helm-select-action)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helm Gtags configuration ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq
+ helm-gtags-ignore-case t
+ helm-gtags-auto-update t
+ helm-gtags-use-input-at-cursor t
+ helm-gtags-pulse-at-cursor t
+ helm-gtags-prefix-key "\C-cg"
+ helm-gtags-suggested-key-mapping t)
+
+(require 'helm-gtags)
+;; Enable helm-gtags-mode
+(add-hook 'dired-mode-hook 'helm-gtags-mode)
+(add-hook 'eshell-mode-hook 'helm-gtags-mode)
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+(define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+(define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-select)
+(define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+(define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+(define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+(define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+
+;;;;;;;;;;;;;;
+;; Semantic ;;
+;;;;;;;;;;;;;;
+(require 'cc-mode)
+(require 'semantic)
+
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+(semantic-mode 1)
+
+
 ;; local packages ;;
 (require 'file-utils)
 (require 'string-utils)
+
+;; ut 
+(add-to-list 'load-path "~/.emacs.d/local-packages/ut")
+(require 'ut)
+(require 'ut-cunit-framework)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Custom Mode Line ;;
@@ -211,7 +290,9 @@ See URL `http://clang.llvm.org/'."
       (set 'c-hanging-braces-alist '((substatement-open . after)))
       (set 'c-echo-syntactic-information-p t)
       (set 'c-tab-always-indent t)
-      (set 'c-comment-only-line-offset 4)))
+      (set 'c-comment-only-line-offset 4)
+      (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'asm-mode)
+        (ggtags-mode 1))))
 
 ;; Qt specific c++ language extensions
 
@@ -266,7 +347,7 @@ See URL `http://clang.llvm.org/'."
 ;;;;;;;;;;;;;;;;;;;;
 ;; External files ;;
 ;;;;;;;;;;;;;;;;;;;;
-(load-library "/home/thartman/projects/testel/testel.el")
+;(load-library "/home/thartman/projects/testel/testel.el")
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -280,7 +361,7 @@ See URL `http://clang.llvm.org/'."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("968d1ad07c38d02d2e5debffc5638332696ac41af7974ade6f95841359ed73e3" default)))
+ '(custom-safe-themes (quote ("f0a99f53cbf7b004ba0c1760aa14fd70f2eabafe4e62a2b3cf5cabae8203113b" "968d1ad07c38d02d2e5debffc5638332696ac41af7974ade6f95841359ed73e3" default)))
  '(flycheck-clang-std "c++11"))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -289,3 +370,4 @@ See URL `http://clang.llvm.org/'."
 
 (set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
 (load-theme 'cyberpunk)
+
