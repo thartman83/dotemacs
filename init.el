@@ -6,18 +6,22 @@
 ;; Get the package manager up and running and load all neccessary require
 ;; packages if they aren't already there
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
+
+(when (not package-archive-contents)
+  (package-refresh-contents))
 
 (defvar required-packages nil "A list of required packages for initialization.")
 
 (setq required-packages
       '(f
         flycheck
+        cyberpunk-theme
         ggtags
         helm
+        helm-gtags
         helm-flycheck
         helm-google
         ht
