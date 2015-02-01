@@ -30,7 +30,6 @@
         multiple-cursors
         org
         paredit
-        paren-face
         semantic
         slime
         yasnippet))
@@ -58,15 +57,15 @@
 (require 'personal nil t)
 
 ;; Load the rest of the initialization files from site-lisp
-(require 'init-appearance)
 (require 'init-slime)
+(require 'init-elisp)
 (require 'init-paredit)
-(require 'init-paren-face)
 (require 'init-ielm)
 (require 'init-flycheck)
 (require 'init-ggtags)
 (require 'init-helm)
 (require 'init-org)
 (require 'init-programming)
+(require 'init-appearance)
 
 ;;; init.el ends here

@@ -50,6 +50,11 @@
             (unless (eq major-mode 'makefile-gmake-mode)
               (untabify (point-min) (point-max)))))
 
+;;;;;;;;;;;;;;;;;
+;; Parenthesis ;;
+;;;;;;;;;;;;;;;;;
+(show-paren-mode 1)
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; Coloring & Fonts ;;
 ;;;;;;;;;;;;;;;;;;;;;;

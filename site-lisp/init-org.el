@@ -5,6 +5,7 @@
 (require 'f)
 (require 'org)
 (require 'org-agenda)
+(require 'org-capture)
 
 (defvar tlh/org-dir "~/notes" "Root directory of all org files.")
 (defvar tlh/org-to-consume-file (f-join tlh/org-dir "topics" "to-consume.org")
@@ -12,7 +13,8 @@
 
 (defun tlh/load-create-current-gtd ()
   "Load the current gtd file based off of date.  Create a new one if neccessary."
-  (setf org-default-notes-file (f-join tlh/org-dir "dates" (downcase (format-time-string "%Y-%B.org"))))
+  (setf org-default-notes-file (f-join tlh/org-dir "dates"
+                                       (downcase (format-time-string "%Y-%B.org"))))
   (unless (f-exists? org-default-notes-file)
     (tlh/create-gtd org-default-notes-file)))
 
@@ -41,29 +43,36 @@
 
 (tlh/load-create-current-gtd)
 
-(setf org-agenda-files (append (f-files (f-join tlh/org-dir "dates")
-                                        #'(lambda (file)
-                                            (and (not (string= (substring file -1 nil) "~"))
-                                                 (not (string= (substring file -1 nil) "#"))
-                                                 (string= (f-ext file) "org"))))))
+(setf org-agenda-files
+      (append (f-files (f-join tlh/org-dir "dates")
+                       #'(lambda (file)
+                           (and (not (string= (substring file -1 nil) "~"))
+                                (not (string= (substring file -1 nil) "#"))
+                                (string= (f-ext file) "org"))))))
 
-(setq org-capture-templates
-      '(("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
-         "* TODO %?" :prepend t)
-        ("m" "Misc" entry (file+headline org-default-notes-file "Misc")
-         "* %?")
-        ("r" "Read" item (file+headline org-default-notes-file "Read")
-         "- %?")
-        ("b" "Book" item (file+headline tlh/org-to-consume-file "Books")
-         "- %?")
-        ("l" "Links" item (file+headline tlh/org-to-consume-file "Links")
-         "- %?")
-        ("p" "Podcast" item (file+headline tlh/org-to-consume-file "Podcasts")
-         "- %?")))
+(add-to-list 'org-capture-templates
+             '("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
+               "* TODO %?" :prepend t))
+(add-to-list 'org-capture-templates
+             '("m" "Misc" entry (file+headline org-default-notes-file "Misc")
+               "* %?"))
+(add-to-list 'org-capture-templates
+             '("r" "Read" item (file+headline org-default-notes-file "Read")
+               "- %?"))
+(add-to-list 'org-capture-templates
+             '("b" "Book" item (file+headline tlh/org-to-consume-file "Books")
+               "- %?"))
+(add-to-list 'org-capture-templates
+             '("l" "Links" item (file+headline tlh/org-to-consume-file "Links")
+              "- %?"))
+(add-to-list 'org-capture-templates
+             '("p" "Podcast" item (file+headline tlh/org-to-consume-file "Podcasts")
+               "- %?"))
 
 ;; keybindings
 (define-key global-map (kbd "M-n") 'org-capture)
-(define-key global-map (kbd "M-N") #'(lambda () (interactive) (find-file org-default-notes-file)))
+(define-key global-map (kbd "M-N") #'(lambda () (interactive)
+                                       (find-file org-default-notes-file)))
 
 (provide 'init-org)
 ;;; init-org.el ends here

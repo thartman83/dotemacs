@@ -4,7 +4,7 @@
 (require 'paren-face)
 
 (when (display-graphic-p)
-  (set-face-foreground 'paren-face "Gray30"))
+  (set-face-foreground 'parenthesis "Gray30"))
 
 (provide 'init-paren-face)
 ;;; init-paren-face.el ends here
