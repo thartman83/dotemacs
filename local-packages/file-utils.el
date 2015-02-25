@@ -43,20 +43,6 @@ Returns nil if the file does not exist."
 
 ;; Directory Utilities, mostly in service to the with-temporary-dir macro
 
-(defun get-new-dir-name (path)
-  "Return an unused random directory name in PATH."
-  (let ((rand-str (get-random-string 6)))
-    (if (not (file-exists-p (file-name-as-directory (concat path rand-str))))
-        (file-name-as-directory (concat path rand-str))
-      (get-random-dir path))))
-
-(defun get-random-string (length)
-  "Return a random string of letters and number of size LENGTH."
-  (let ((chars "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"))
-    (if (= length 1)
-        (string (elt chars (random (length chars))))
-      (concat (string (elt chars (random (length chars)))) (get-random-string (1- length))))))
-
 (defun append-string-into-file (str filename)
   "Append STR to FILENAME."
   (save-excursion
@@ -69,7 +55,8 @@ Returns nil if the file does not exist."
 
 (defmacro with-temporary-dir (&rest body)
   "Create a temporary directory in pwd and execute BODY in pwd.
-Removes directory and its contents at the end of execution.  Returns the value of body."
+Removes directory and its contents at the end of execution.
+Returns the value of body."
   (let ((olddir default-directory)
         (dir (get-new-dir-name default-directory)))
     `(unwind-protect

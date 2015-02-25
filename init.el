@@ -16,7 +16,8 @@
 (defvar required-packages nil "A list of required packages for initialization.")
 
 (setq required-packages
-      '(f
+      '(auto-complete
+        f
         flycheck
         cyberpunk-theme
         ggtags
@@ -57,6 +58,8 @@
 (require 'personal nil t)
 
 ;; Load the rest of the initialization files from site-lisp
+(require 'init-auto-complete)
+(require 'init-yasnippet)
 (require 'init-slime)
 (require 'init-elisp)
 (require 'init-paredit)
