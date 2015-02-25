@@ -17,6 +17,7 @@
 
 (setq required-packages
       '(auto-complete
+        auto-complete-c-headers
         f
         flycheck
         cyberpunk-theme
