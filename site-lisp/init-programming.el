@@ -41,7 +41,17 @@
   (save-excursion
     (goto-char (point-min))
     (when (re-search-forward "^<<<<<<< " nil t)
-            (smerge-mode 1))))
+      (smerge-mode 1))))
+
+(defun comment-lines (str beg end line-width)
+  "Return a commented version of STR using BEG, END and LINE-WIDTH."
+  (let ((lines (split-string str "\n")))
+    (mapconcat #'(lambda (line)
+                   (concat beg " " str (make-string (- line-width
+                                                       (length str)
+                                                       (+ (length beg) 1)
+                                                       (length end)) ? )
+                           end)) lines "\n")))
 
 (provide 'init-programming)
 ;;; init-programming.el ends here

@@ -1,3 +1,13 @@
 *~
 *.elc
-/personal.el
+/site-lisp/personal.el
+/elpa/
+site-lisp/#*#
+site=lisp/*~
+/recentf
+/ac-comphist.dat
+/.mc-lists.el
+/bookmarks
+/eshell/
+/irony/
+/site-lisp/.#init-paren-face.el

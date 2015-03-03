@@ -20,6 +20,7 @@
         auto-complete-c-headers
         f
         flycheck
+        irony
         cyberpunk-theme
         ggtags
         helm
@@ -33,6 +34,7 @@
         org
         paredit
         semantic
+        skeletor
         slime
         yasnippet))
 
@@ -56,7 +58,7 @@
 (load custom-file 'noerror)
 
 ;; Load personal information and vars
-(require 'personal nil t)
+(require 'personal)
 
 ;; Load the rest of the initialization files from site-lisp
 (require 'init-auto-complete)
@@ -65,6 +67,8 @@
 (require 'init-elisp)
 (require 'init-paredit)
 (require 'init-ielm)
+(require 'init-skeletor)
+;(require 'init-irony)
 (require 'init-flycheck)
 (require 'init-ggtags)
 (require 'init-helm)

@@ -7,5 +7,5 @@
 (setq yas/root-directory '("~/.emacs.d/snippets"))
 (mapc #'yas-load-directory yas/root-directory)
 
-(provide 'init-vasnippet.el)
+(provide 'init-yasnippet)
 ;;; init-yasnippet.el ends here

@@ -1,13 +1,6 @@
-# -*- mode: snippet -*-
-# name: newheader
-# key: newheader
-# --
 /*****************************************************************************/ 
-`(comment-lines (concat (file-name-nondirectory (buffer-file-name)) " for " $1) 
-                "/*" "*/" 79)`
-`(comment-lines (concat "Copyright (c) " 
-                        (format-time-string "%Y" (current-time)) " " 
-                        *full-name* " (" *email* ")") "/*" "*/" 79)`
+/* main.cc for __PROJECT_NAME__                                              */
+/* Copyright (c) 2013 Tom Hartman (thomas.lees.hartman@gmail.com)            */
 /*                                                                           */
 /* This program is free software; you can redistribute it and/or             */
 /* modify it under the terms of the GNU General Public License               */
@@ -20,12 +13,8 @@
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
 /* GNU General Public License for more details.                              */
 /*****************************************************************************/
-#ifndef `(upcase (file-name-base)) `_HH_
-#define `(upcase (file-name-base))`_HH_
 
-class `(capitalize (file-name-base))` 
+int main(int argc, char ** argv)
 {
-
-};
-
-#endif /* `(upcase (file-name-base))`_HH_ */
+   return 0;
+}
