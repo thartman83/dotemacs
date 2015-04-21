@@ -122,11 +122,11 @@
   (interactive)
   (let ((project-org-file (tlh/project-org-file-by-directory default-directory))
         (org-capture-templates '(("t" "Todo" entry (file+headline project-org-file "Todo")
-                                  "* TODO: %?" :prepend t)
+                                  "* TODO %?" :prepend t)
                                  ("f" "Feature" entry (file+headline default-directory "Todo")
-                                  "* FEATURE: %?" :prepend t)
+                                  "* FEATURE %?" :prepend t)
                                  ("b" "Bug" entry (file+headline project-org-file "Bugs")
-                                  "* BUG: %?" :prepend t))))
+                                  "* BUG %?" :prepend t))))
     (org-capture)))
 
 
