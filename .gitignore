@@ -11,3 +11,5 @@ site=lisp/*~
 /eshell/
 /irony/
 /site-lisp/.#init-paren-face.el
+/games/
+/local-packages/ut

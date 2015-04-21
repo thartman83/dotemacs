@@ -68,12 +68,15 @@
 (require 'init-paredit)
 (require 'init-ielm)
 (require 'init-skeletor)
-;(require 'init-irony)
 (require 'init-flycheck)
 (require 'init-ggtags)
 (require 'init-helm)
 (require 'init-org)
 (require 'init-programming)
 (require 'init-appearance)
+
+;; Experimental
+(add-to-list 'load-path "/home/thartman/projects/org-filing-cabinet")
+(require 'org-filing-cabinet)
 
 ;;; init.el ends here
