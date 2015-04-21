@@ -72,6 +72,7 @@
 (require 'init-ggtags)
 (require 'init-helm)
 (require 'init-org)
+(require 'init-magit)
 (require 'init-programming)
 (require 'init-appearance)
 
