@@ -3,11 +3,12 @@
 ;;; Code:
 
 (eval-after-load "emacs-lisp-mode"
-  (define-key emacs-lisp-mode-map (kbd "C-c e")
-    '(lambda ()
-       (interactive)
-       (eval-buffer)
-       (message "%s evaluated" (buffer-name (current-buffer))))))
+  (progn
+    (define-key emacs-lisp-mode-map (kbd "C-c e")
+      #'(lambda ()
+         (interactive)
+         (eval-buffer)
+         (message "%s evaluated" (buffer-name (current-buffer)))))))
 
 (provide 'init-elisp)
 

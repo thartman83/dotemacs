@@ -7,22 +7,22 @@
 (require 'helm-flycheck)
 
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
- (global-set-key (kbd "M-x") 'helm-M-x)
- (global-set-key (kbd "C-x b") 'helm-mini)
- (global-unset-key (kbd "C-x c"))
- (when (executable-find "curl")
-   (setq helm-google-suggest-use-curl-p t))
- (setq helm-quick-update t
-       helm-split-window-in-side-p t
-       helm-buffers-fuzzy-matching t
-       helm-move-to-line-cycle-in-source t
-       helm-ff-search-in-sexp t
-       helm-scroll-amount 8
-       helm-ff-file-name-histroy-use-recentf t)
- (helm-mode 1)
- (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
- (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
- (define-key helm-map (kbd "C-z") 'helm-select-action)
+;;(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-unset-key (kbd "C-x c"))
+(when (executable-find "curl")
+  (setq helm-google-suggest-use-curl-p t))
+(setq helm-quick-update t
+      helm-split-window-in-side-p t
+      helm-buffers-fuzzy-matching t
+      helm-move-to-line-cycle-in-source t
+      helm-ff-search-in-sexp t
+      helm-scroll-amount 8
+      helm-ff-file-name-histroy-use-recentf t)
+(helm-mode 1)
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-z") 'helm-select-action)
 
 (setq
  helm-gtags-ignore-case t

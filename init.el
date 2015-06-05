@@ -80,4 +80,5 @@
 (add-to-list 'load-path "/home/thartman/projects/org-filing-cabinet")
 (require 'org-filing-cabinet)
 
+
 ;;; init.el ends here

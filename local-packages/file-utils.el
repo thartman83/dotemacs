@@ -79,6 +79,8 @@ end of the block."
          ,@body
        (cd olddir))))
 
+(def-edebug-spec save-current-directory (body))
+
 (provide 'file-utils)
 
 ;;; file-utils.el ends here
