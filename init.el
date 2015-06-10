@@ -71,6 +71,7 @@
 (require 'init-flycheck)
 (require 'init-ggtags)
 (require 'init-helm)
+(require 'init-mc)
 (require 'init-org)
 (require 'init-magit)
 (require 'init-programming)
