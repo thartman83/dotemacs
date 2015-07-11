@@ -53,5 +53,55 @@
                                                        (length end)) ? )
                            end)) lines "\n")))
 
+(defun generate-c++-configure.ac (project path)
+  "Generate a default configure.ac for PROJECT to PATH/configure.ac."
+  (interactive "sProject name: \nDConfigure.ac path:  ")
+  (let ((downcase-project (s-downcase (s-replace "-" "_" project)))
+        (upcase-project (s-upcase (s-replace "-" "_" project))))
+    (f-write-text
+     (mapconcat #'identity
+                (list
+                 "dnl Process this file with autoconf to produce a configure script."
+                 ""
+                 "AC_PREREQ(2.60)"
+                 ""
+                 (format "m4_define([%s_major_version], [0])" downcase-project)
+                 (format "m4_define([%s_minor_version], [1])" downcase-project)
+                 (format "m4_define([%s_version], \\" downcase-project)
+                 (format "          [%s_major_version.%s_minor_version])"
+                         downcase-project downcase-project)
+                 ""
+                 (format "AC_INIT([%s],[1.0])" downcase-project)
+                 "AC_CONFIG_MACRO_DIR([config])"
+                 "AM_INIT_AUTOMAKE([1.11 dist-bzip2])"
+                 "LT_PREREQ([2.2])"
+                 "LT_INIT([dlopen])"
+                 ""
+                 (format "AC_SUBST(%s_MAJOR_VERSION, [%s_major_version])"
+                         upcase-project downcase-project)
+                 (format "AC_SUBST(%s_MINOR_VERSION, [%s_minor_version])"
+                         upcase-project downcase-project)
+                 (format "AC_SUBST(%s_VERSION, [%s_version])"
+                         upcase-project downcase-project)
+                 ""
+                 "dnl Check for programs."
+                 ""
+                 "AC_PROG_MAKE_SET"
+                 "AC_PROG_INSTALL"
+                 "AC_PROG_CXX"
+                 "AC_LANG(C++)"
+                 "AC_PROG_LIBTOOL"
+                 "AC_LTDL_DLLIB"
+                 ""
+                 "dnl C++ checks"
+                 "AC_CHECK_HEADERS"
+                 "AX_CXX_COMPILE_STDCXX_11"
+                 
+                 "AC_CONFIG_FILES ([Makefile] [src/Makefile] [tests/Makefile])"
+                 ""
+                 "AC_OUTPUT")
+                "\n")
+     'utf-8 (f-join path "configure.ac"))))
+
 (provide 'init-programming)
 ;;; init-programming.el ends here

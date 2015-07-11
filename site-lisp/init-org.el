@@ -10,6 +10,8 @@
 (defvar tlh/org-dir "~/notes" "Root directory of all org files.")
 (defvar tlh/org-to-consume-file (f-join tlh/org-dir "topics" "to-consume.org")
   "Path to the org file containing this to watch, read, and listen to.")
+(defvar tlh/org-house-notes-file (f-join tlh/org-dir "topics/house" "house.org")
+  "House Notes.")
 
 (defun tlh/load-create-current-gtd ()
   "Load the current gtd file based off of date.  Create a new one if neccessary."
@@ -92,6 +94,9 @@
 (add-to-list 'org-capture-templates
              '("m" "Misc" entry (file+headline org-default-notes-file "Misc")
                "* %?"))
+(add-to-list 'org-capture-templates
+             '("h" "House Project" entry (file+headline tlh/org-house-notes-file "Projects")
+               "* TODO %?"))
 
 ; Consumables
 (add-to-list 'org-capture-templates
@@ -129,12 +134,11 @@
                                   "* BUG %?" :prepend t))))
     (org-capture)))
 
-
 ;; Test tlh/project-name-by-directory
-(ert-deftest tlh/test-project-name-by-directory ()
-  (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo")))
-  (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo/bar")))
-  (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo/bar/baz"))))
+;; (ert-deftest tlh/test-project-name-by-directory ()
+;;   (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo")))
+;;   (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo/bar")))
+;;   (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo/bar/baz"))))
 
 (provide 'init-org)
 ;;; init-org.el ends here
