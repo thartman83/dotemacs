@@ -134,6 +134,9 @@
                                   "* BUG %?" :prepend t))))
     (org-capture)))
 
+(setq org-todo-keywords
+      '((sequence "TODO" "INPROGRESS" "FEEDBACK" "|" "DONE")))
+
 ;; Test tlh/project-name-by-directory
 ;; (ert-deftest tlh/test-project-name-by-directory ()
 ;;   (should (string= "foo" (tlh/project-name-by-directory "~/projects/foo")))

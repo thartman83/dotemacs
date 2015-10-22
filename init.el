@@ -73,6 +73,7 @@
 (require 'init-helm)
 (require 'init-mc)
 (require 'init-org)
+(require 'init-org-fc)
 (require 'init-magit)
 (require 'init-programming)
 (require 'init-appearance)
