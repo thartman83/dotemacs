@@ -59,8 +59,9 @@
 ;; Coloring & Fonts ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-(set-frame-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
-(load-theme 'cyberpunk)
+;;; (set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
 
+(load-theme 'cyberpunk)
+(add-to-list 'default-frame-alist '(font . "proggytiny-10"))
 (provide 'init-appearance)
 ;;; init-appearance.el ends here

@@ -13,6 +13,16 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+;; Need f to get some basic path stuff established
+(use-package f)
+;; Setup initialization paths
+(defvar site-lisp-dir (f-expand (f-join user-emacs-directory "site-lisp"))
+  "Path where setup and configuration files for Emacs reside.")
+(add-to-list 'load-path site-lisp-dir)
+
 (defvar required-packages nil "A list of required packages for initialization.")
 
 (setq required-packages
@@ -47,13 +57,6 @@
 
 (tlh/install-all-required-packages)
 
-(require 'f)
-;; Setup initialization paths
-(defvar site-lisp-dir (f-expand (f-join user-emacs-directory "site-lisp"))
-  "Path where setup and configuration files for Emacs reside.")
-
-(add-to-list 'load-path site-lisp-dir)
-
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
@@ -76,6 +79,7 @@
 (require 'init-org-fc)
 (require 'init-magit)
 (require 'init-programming)
+(require 'init-ledger)
 (require 'init-appearance)
 
 ;; Experimental

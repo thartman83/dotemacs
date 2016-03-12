@@ -53,6 +53,9 @@
                                                        (length end)) ? )
                            end)) lines "\n")))
 
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
 (defun generate-c++-configure.ac (project path)
   "Generate a default configure.ac for PROJECT to PATH/configure.ac."
   (interactive "sProject name: \nDConfigure.ac path:  ")
