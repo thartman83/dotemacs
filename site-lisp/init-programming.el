@@ -106,5 +106,9 @@
                 "\n")
      'utf-8 (f-join path "configure.ac"))))
 
+;;; lua mode hooks
+(add-hook 'lua-mode-hook #'(lambda ()
+                             (setq-local origami-fold-style 'triple-braces)))
+
 (provide 'init-programming)
 ;;; init-programming.el ends here

@@ -42,6 +42,7 @@
         magit
         multiple-cursors
         org
+        origami
         paredit
         semantic
         skeletor
@@ -77,14 +78,15 @@
 (require 'init-mc)
 (require 'init-org)
 (require 'init-org-fc)
+(require 'init-origami)
 (require 'init-magit)
 (require 'init-programming)
 (require 'init-ledger)
 (require 'init-appearance)
 
 ;; Experimental
-(add-to-list 'load-path "/home/thartman/projects/org-filing-cabinet")
-(require 'org-filing-cabinet)
+;(add-to-list 'load-path "/home/thartman/projects/org-filing-cabinet")
+;(require 'org-filing-cabinet)
 
 
 ;;; init.el ends here
