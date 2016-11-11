@@ -16,6 +16,10 @@
 (global-set-key (kbd "C-c t") 'origami-toggle-node)
 (global-set-key (kbd "C-c T") 'origami-toggle-all-nodes)
 
+;; Origami move
+(global-set-key (kbd "C-c n") 'origami-next-fold)
+(global-set-key (kbd "C-c p") 'origami-previous-fold)
+
 (global-origami-mode)
 
 (provide 'init-origami)
