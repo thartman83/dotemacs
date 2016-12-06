@@ -3,8 +3,7 @@
 # key: headerlic
 # --
 -------------------------------------------------------------------------------
-$(comment-lines (concat (file-name-nondirectory (buffer-file-name)) " for " ${1:project})
-  "--" "--" 79)
+-- `(file-name-nondirectory (buffer-file-name))` for ${1:$$(when (and yas-modified-p yas-moving-away-p) (concat yas/text (make-string (- 58 (string-width yas/text)) ?\ )))} --
 `(comment-lines (concat "Copyright (c) " (format-time-string "%Y" (current-time)) " "
                     *full-name* " (" *email* ")") "--" "--" 79)`
 --                                                                           --
@@ -19,4 +18,11 @@ $(comment-lines (concat (file-name-nondirectory (buffer-file-name)) " for " ${1:
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             --
 -- GNU General Public License for more details.                              --
 -------------------------------------------------------------------------------
+
+--- Commentary -- {{{
+-- $2
+-- }}}
+
+--- ${3:$$(f-no-ext (f-filename (buffer-file-name)))} -- {{{
 $0
+-- }}}
