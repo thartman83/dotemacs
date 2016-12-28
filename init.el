@@ -41,6 +41,8 @@
         lua-mode
         magit
         multiple-cursors
+        scad-mode
+        scad-preview
         org
         origami
         paredit
