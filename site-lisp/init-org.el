@@ -75,22 +75,27 @@
                     'utf-8 org-file))
     org-file))
 
-(tlh/load-create-current-gtd)
+;; (tlh/load-create-current-gtd)
 
-(setf org-agenda-files
-      (append (f-files (f-join tlh/org-dir "dates")
-                       #'(lambda (file)
-                           (and (not (string= (substring file -1 nil) "~"))
-                                (not (string= (substring file -1 nil) "#"))
-                                (string= (f-ext file) "org"))))))
+;; (setf org-agenda-files
+;;       (append (f-files (f-join tlh/org-dir "dates")
+;;                        #'(lambda (file)
+;;                            (and (not (string= (substring file -1 nil) "~"))
+;;                                 (not (string= (substring file -1 nil) "#"))
+;;                                 (string= (f-ext file) "org"))))))
+
+(setf org-default-notes-file (f-join tlh/org-dir "gtd.org"))
+(setf org-agenda-files (list org-default-notes-file))
 
 ; Monthly Tasks/Events/Misc
 (add-to-list 'org-capture-templates
              '("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
                "* TODO %?" :prepend t))
 (add-to-list 'org-capture-templates
-             '("e" "Event" entry (file+headline org-default-notes-file "Events")
+             '("e" "Event" entry (file+headline org-default-notes-file "Calendar")
                "* SCHEDULED %?" :prepend t))
+(add-to-list 'org-capture-templates
+             '("a" "Appointment" entry (file+headline org-default-notes-file "Calendar")))
 (add-to-list 'org-capture-templates
              '("m" "Misc" entry (file+headline org-default-notes-file "Misc")
                "* %?"))
