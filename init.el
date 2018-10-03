@@ -7,7 +7,7 @@
 ;; packages if they aren't already there
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
 (when (not package-archive-contents)
@@ -15,6 +15,9 @@
 
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
+
+(unless (package-installed-p 'f)
+  (package-install 'f))
 
 ;; Need f to get some basic path stuff established
 (use-package f)

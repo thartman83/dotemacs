@@ -63,5 +63,17 @@
 
 (load-theme 'cyberpunk)
 (add-to-list 'default-frame-alist '(font . "proggytiny-10"))
+
+
+;;;;;;;;;;;;;;;;;;
+;; Transparency ;;
+;;;;;;;;;;;;;;;;;;
+(defun set-transparency (value)
+  "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
+(set-transparency 80)
+
 (provide 'init-appearance)
 ;;; init-appearance.el ends here
