@@ -59,9 +59,16 @@
 ;; Coloring & Fonts ;;
 ;;;;;;;;;;;;;;;;;;;;;;
 
-;;; (set-default-font "-windows-proggytiny-medium-r-normal--10-80-96-96-c-60-iso8859-1")
-
 (load-theme 'cyberpunk)
-(add-to-list 'default-frame-alist '(font . "proggytiny-10"))
+(add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
+
+
+(defun set-transparency (value)
+  "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
+  (interactive "nTransparency Value 0 - 100: ")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
+(set-transparency 80)
+
 (provide 'init-appearance)
 ;;; init-appearance.el ends here

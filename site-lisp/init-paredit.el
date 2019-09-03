@@ -14,5 +14,8 @@
 (add-hook 'scheme-mode-hook 'paredit-mode)
 (add-hook 'ielm-mode-hook 'paredit-mode)
 
+;; turn on paredit for Cask files too
+(add-to-list 'auto-mode-alist '("Cask" . paredit-mode))
+
 (provide 'init-paredit)
 ;;; init-paredit.el ends here
