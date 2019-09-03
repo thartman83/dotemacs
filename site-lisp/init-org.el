@@ -12,6 +12,7 @@
   "Path to the org file containing this to watch, read, and listen to.")
 (defvar tlh/org-house-notes-file (f-join tlh/org-dir "topics/house" "house.org")
   "House Notes.")
+(defvar tlh/org-calendar-file (f-join tlh/org-dir "calendar.org"))
 
 (defun tlh/load-create-current-gtd ()
   "Load the current gtd file based off of date.  Create a new one if neccessary."
@@ -85,24 +86,25 @@
 ;;                                 (string= (f-ext file) "org"))))))
 
 (setf org-default-notes-file (f-join tlh/org-dir "gtd.org"))
-(setf org-agenda-files (list org-default-notes-file))
+(setf org-agenda-files (list org-default-notes-file tlh/org-calendar-file))
+(setf org-capture-templates nil)
 
 ; Monthly Tasks/Events/Misc
 (add-to-list 'org-capture-templates
              '("t" "Todo" entry (file+headline org-default-notes-file "Tasks")
                "* TODO %?" :prepend t))
 (add-to-list 'org-capture-templates
-             '("e" "Event" entry (file+headline org-default-notes-file "Calendar")
-               "* SCHEDULED %?" :prepend t))
+  '("n" "Nats Game" entry (file+headline tlh/org-calendar-file "Nats Games")
+    "* %? vs Nats \n SCHEDULED: %^T"))
 (add-to-list 'org-capture-templates
-             '("a" "Appointment" entry (file+headline org-default-notes-file "Calendar")))
+  '("c" "Concert" entry (file+headline tlh/org-calendar-file "Concerts")
+    "* %? \n SCHEDULED: %^T %^{LOCATION}p"))
+(add-to-list 'org-capture-templates
+  '("a" "Appointment" entry (file+headline tlh/org-calendar-file "Appointments")
+    "* %?\nSCHEDULED %^T %^{LOCATION}p"))
 (add-to-list 'org-capture-templates
              '("m" "Misc" entry (file+headline org-default-notes-file "Misc")
                "* %?"))
-(add-to-list 'org-capture-templates
-             '("h" "House Project" entry (file+headline tlh/org-house-notes-file "Projects")
-               "* TODO %?"))
-
 ; Consumables
 (add-to-list 'org-capture-templates
              '("r" "Read" item (file+headline tlh/org-to-consume-file "Read")

@@ -13,3 +13,10 @@ site=lisp/*~
 /site-lisp/.#init-paren-face.el
 /games/
 /local-packages/ut
+/network-security.data
+/.cache/treemacs-persist
+/.cask/*
+/transient/*
+/tutorial/*
+/custom.el
+/abbrev_defs

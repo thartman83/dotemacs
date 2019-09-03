@@ -3,70 +3,23 @@
 ;;
 ;;; Code:
 
-;; Get the package manager up and running and load all neccessary require
-;; packages if they aren't already there
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-;;; (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
-(when (not package-archive-contents)
-  (package-refresh-contents))
+(require 'cask "~/.cask/cask.el")
+(cask-initialize)
+(require 'pallet)
+(pallet-mode t)
 
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(unless (package-installed-p 'f)
-  (package-install 'f))
-
-;; Need f to get some basic path stuff established
-(use-package f)
 ;; Setup initialization paths
 (defvar site-lisp-dir (f-expand (f-join user-emacs-directory "site-lisp"))
   "Path where setup and configuration files for Emacs reside.")
 (add-to-list 'load-path site-lisp-dir)
 
-(defvar required-packages nil "A list of required packages for initialization.")
-
-(setq required-packages
-      '(auto-complete
-        auto-complete-c-headers
-        f
-        flycheck
-        irony
-        cyberpunk-theme
-        ggtags
-        helm
-        helm-gtags
-        helm-flycheck
-        helm-google
-        ht
-        lua-mode
-        magit
-        multiple-cursors
-        scad-mode
-        scad-preview
-        org
-        origami
-        paredit
-        semantic
-        skeletor
-        slime
-        yasnippet))
-
-(defun tlh/install-all-required-packages ()
-  "Install all required packages."
-  (interactive)
-  (dolist (package required-packages)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(tlh/install-all-required-packages)
-
+;; Custom File - Contains custom variables that are not maintained by git
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
-;; Load personal information and vars
+;; Load personal information and vars that are not maintained by git
 (require 'personal)
 
 ;; Load the rest of the initialization files from site-lisp
@@ -88,10 +41,5 @@
 (require 'init-programming)
 (require 'init-ledger)
 (require 'init-appearance)
-
-;; Experimental
-;(add-to-list 'load-path "/home/thartman/projects/org-filing-cabinet")
-;q(require 'org-filing-cabinet)
-
 
 ;;; init.el ends here
