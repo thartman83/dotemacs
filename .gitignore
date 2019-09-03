@@ -1,5 +1,6 @@
 *~
 *.elc
+\#*\#
 /site-lisp/personal.el
 /elpa/
 site-lisp/#*#
