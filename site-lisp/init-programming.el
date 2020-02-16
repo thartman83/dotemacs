@@ -110,5 +110,8 @@
 (add-hook 'lua-mode-hook #'(lambda ()
                              (setq-local origami-fold-style 'triple-braces)))
 
+;;; python-mode
+
+
 (provide 'init-programming)
 ;;; init-programming.el ends here
