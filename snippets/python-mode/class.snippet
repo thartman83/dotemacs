@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: newclass
+# key: class
+# --
+### ${1:ClassDescription} ## {{{
+class $1(${2:Base}):
+      def __init__(self):
+          self.data = []
+      $0
+## }}}

@@ -1,0 +1,77 @@
+# -*- mode: snippet -*-
+# name: awesome widget
+# key: awesomewidget
+# --
+--- Libraries -- {{{
+local setmetatable = setmetatable
+local math         = math
+local color        = require('gears.color' )
+local wibox        = require('wibox'       )
+local cairo        = require('lgi'         )
+local pango        = require('lgi'         ).Pango
+local pangocairo   = require('lgi'         ).PangoCairo
+local awful        = require('awful'       )
+local gtable       = require('gears.table' )
+local gstring      = require('gears.string')
+local beautiful    = require('beautiful'   )
+local naughty      = require('naughty'     )
+local dpi          = require('beautiful'   ).xresources.apply_dpi
+-- }}}
+
+local $1 = {}
+
+-- Helper Functions -- {{{
+
+-- }}}
+
+-- Methods -- {{{
+
+-- $1:fit -- {{{
+------------------------------------------------------------------------------
+--  Return the proper width and height of the $2 widget
+--
+-- @param ctx Cairo context
+-- @param width the hinted width
+-- @param height the hinted height
+-- @return the desired width and height, where width is equal to half
+-- the height of the bounding wibar
+------------------------------------------------------------------------------
+function $1:fit (ctx, width, height)
+         return height, height
+end
+-- }}}
+
+--- $1:draw -- {{{
+----------------------------------------------------------------------
+-- Draw the $2 widget.
+--
+-- @param w the widget to draw
+-- @param cr the cairo context
+-- @param width width of the space to draw
+-- @param height height of the space to draw
+----------------------------------------------------------------------
+function pass:draw (w, cr, width, height)
+         cr:save()
+         
+         cr:restore()
+end
+-- }}}
+
+--- $2 constructor -- {{{
+------------------------------------------------------------------------------
+-- Build a new $2 widget:
+--
+-------------------------------------------------------------------------------
+local function new(args)
+      local w = wibox.widget.base.empty_widget()
+      gtable.crush(obj, $1, true)
+
+      local args = args or {}
+      $0
+      return w
+end
+-- }}}
+
+-- }}}
+
+return setmetatable($1, {__call = function(_,...) return new(...) end})

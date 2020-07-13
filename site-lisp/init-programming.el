@@ -4,6 +4,7 @@
 (require 'cc-mode)
 (require 'magit)
 (require 'ggtags)
+(require 'jedi)
 
 ;;Always used c++ mode pren style
 (add-hook 'c-mode-hook '(lambda () (c-set-style "ellemtel")))
@@ -111,7 +112,8 @@
                              (setq-local origami-fold-style 'triple-braces)))
 
 ;;; python-mode
-
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)
 
 (provide 'init-programming)
 ;;; init-programming.el ends here

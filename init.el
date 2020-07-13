@@ -5,8 +5,8 @@
 
 (package-initialize)
 
-(require 'cask "~/.cask/cask.el")
-(cask-initialize)
+(require 'cask "/usr/share/emacs/site-lisp/cask/cask.el")
+(cask-initialize "~/.emacs.d/")
 (require 'pallet)
 (pallet-mode t)
 
