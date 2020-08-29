@@ -111,9 +111,40 @@
 (add-hook 'lua-mode-hook #'(lambda ()
                              (setq-local origami-fold-style 'triple-braces)))
 
+;;; html hooks
+(add-hook 'html-mode-hook 'emmet-mode)
+
 ;;; python-mode
 (add-hook 'python-mode-hook 'jedi:setup)
+(elpy-enable)
 (setq jedi:complete-on-dot t)
+(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+
+;;; typescript tide setup
+(defun setup-tide-mode ()
+  (interactive)
+  (setq-default typescript-indent-level 2)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1)
+  )
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+;;; javascript tab width
+(setq js-indent-level 2)
 
 (provide 'init-programming)
 ;;; init-programming.el ends here

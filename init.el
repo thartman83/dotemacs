@@ -39,6 +39,8 @@
 (require 'init-origami)
 (require 'init-magit)
 (require 'init-programming)
+(require 'init-projectile)
+(require 'init-treeview)
 (require 'init-ledger)
 (require 'init-appearance)
 
