@@ -5,8 +5,8 @@
 
 (package-initialize)
 
-(require 'cask "~/.cask/cask.el")
-(cask-initialize)
+(require 'cask "/usr/share/emacs/site-lisp/cask/cask.el")
+(cask-initialize "~/.emacs.d/")
 (require 'pallet)
 (pallet-mode t)
 
@@ -39,6 +39,8 @@
 (require 'init-origami)
 (require 'init-magit)
 (require 'init-programming)
+(require 'init-projectile)
+(require 'init-treeview)
 (require 'init-ledger)
 (require 'init-company)
 ;;(require 'init-anaconda)
