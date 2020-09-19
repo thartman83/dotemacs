@@ -40,6 +40,8 @@
 (require 'init-magit)
 (require 'init-programming)
 (require 'init-ledger)
+(require 'init-company)
+;;(require 'init-anaconda)
 (require 'init-appearance)
 
 ;;; init.el ends here

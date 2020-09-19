@@ -4,6 +4,7 @@
 (require 'cc-mode)
 (require 'magit)
 (require 'ggtags)
+(require 'jedi)
 
 ;;Always used c++ mode pren style
 (add-hook 'c-mode-hook '(lambda () (c-set-style "ellemtel")))
@@ -66,7 +67,7 @@
                 (list
                  "dnl Process this file with autoconf to produce a configure script."
                  ""
-                 "AC_PREREQ(2.60)"
+ "AC_PREREQ(2.60)"
                  ""
                  (format "m4_define([%s_major_version], [0])" downcase-project)
                  (format "m4_define([%s_minor_version], [1])" downcase-project)
@@ -111,7 +112,9 @@
                              (setq-local origami-fold-style 'triple-braces)))
 
 ;;; python-mode
-
+(add-hook 'python-mode-hook 'jedi:setup)
+(elpy-enable)
+;;(setq jedi:complete-on-dot t)
 
 (provide 'init-programming)
 ;;; init-programming.el ends here
