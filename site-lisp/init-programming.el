@@ -67,7 +67,7 @@
                 (list
                  "dnl Process this file with autoconf to produce a configure script."
                  ""
-                 "AC_PREREQ(2.60)"
+ "AC_PREREQ(2.60)"
                  ""
                  (format "m4_define([%s_major_version], [0])" downcase-project)
                  (format "m4_define([%s_minor_version], [1])" downcase-project)

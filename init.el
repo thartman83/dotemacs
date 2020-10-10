@@ -42,6 +42,8 @@
 (require 'init-projectile)
 (require 'init-treeview)
 (require 'init-ledger)
+(require 'init-company)
+;;(require 'init-anaconda)
 (require 'init-appearance)
 
 ;;; init.el ends here
