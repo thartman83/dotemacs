@@ -70,8 +70,10 @@
   (let* ((buffer (dired-noselect (projectile-project-root)))
     (window (get-buffer-window buffer)))
     (if window
-    (mhj/hide-project-explorer)
-      (mhj/show-project-explorer))))
+        (tlh/jump-to-project-explorer buffer)
+      (progn
+        (mhj/show-project-explorer)
+        (tlh/jump-to-project-explorer buffer)))))
 
 (defun mhj/show-project-explorer ()
   "Project dired buffer on the side of the frame.
@@ -81,6 +83,10 @@ the frame and makes it a dedicated window for that buffer."
     (progn
       (display-buffer-in-side-window buffer '((side . left) (window-width . 0.2)))
       (set-window-dedicated-p (get-buffer-window buffer) t))))
+
+(defun tlh/jump-to-project-explorer (buffer)
+  "Jump to the project BUFFER for the specific project."
+  (switch-to-buffer-other-window buffer))
 
 (defun mhj/hide-project-explorer ()
   "Hide the project-explorer window."
