@@ -60,7 +60,7 @@
   :config
   (progn
     (setq insert-directory-program "/bin/ls")
-    (setq dired-listing-switches "-lXGh --group-directories-first")
+    (setq dired-listing-switches "-alXGh --group-directories-first")
     (add-hook 'dired-mode-hook 'dired-omit-mode)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
