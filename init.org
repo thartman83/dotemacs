@@ -104,26 +104,32 @@ Initialize the package repositories. Org mode in mainline emacs can be behind th
 Setup the use-package package as well for ease of package management and configuration
 
    #+begin_src emacs-lisp
-;; Initialize package sources
-(require 'package)
+     ;; Initialize package sources
+     (require 'package)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+     (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			      ("org" . "https://orgmode.org/elpa/")
+			      ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+     (package-initialize)
+     (unless package-archive-contents
+       (package-refresh-contents))
 
-;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+     ;; Initialize use-package on non-Linux platforms
+     (unless (package-installed-p 'use-package)
+       (package-install 'use-package))
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+     (require 'use-package)
+     (setq use-package-always-ensure t)
+
+     (use-package auto-package-update
+	:ensure t
+	:config
+	(setq auto-package-update-delete-old-versions t
+	      auto-package-update-interval 4)
+	(auto-package-update-maybe))
    
    #+end_src
-
 
 * Apperance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
@@ -170,7 +176,6 @@ A quick function to set the transparency of emacs when in window mode. I've foun
   :config
   (setq which-key-idle-delay 1))
 #+end_src
-
 
 * Org Mode
 
@@ -248,6 +253,12 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 #+end_src
 
 
+** Agenda
+
+#+begin_src emacs-lisp
+
+#+end_src
+
 * Ivy and Counsel
 #+begin_src emacs-lisp
 (use-package ivy
@@ -283,7 +294,6 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 
 #+end_src
 
-
 * Magit
 #+begin_src emacs-lisp
 (use-package magit
@@ -297,9 +307,7 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 
 #+end_src
 
-
-* Languages
-
+* Programming
 ** Flycheck
 Flycheck mode for syntax highlighting and linting
 #+begin_src emacs-lisp
@@ -307,7 +315,6 @@ Flycheck mode for syntax highlighting and linting
 (use-package flycheck)
 
 #+end_src
-
 
 ** Language Server Protocol
 Basic LSP setup
@@ -342,9 +349,8 @@ LSP-treemacs
   :after lsp)
 #+end_src
 
-
 ** DAP
-#+begin_src emacs-lisp
+#+begin_src 
 (use-package dap-mode
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
   ;; :custom
@@ -364,81 +370,7 @@ LSP-treemacs
     "d" '(dap-hydra t :wk "debugger")))
 #+end_src
 
-
-** Emacs Lisp
-
-Paredit mode
-
-#+begin_src emacs-lisp
-(use-package paredit
-  :config
-  
-  ;; slurping in a terminal doesn't quite work, so rebind keys so they do
-  (unless (display-graphic-p)
-    (define-key paredit-mode-map (kbd ",") 'paredit-backward-slurp-sexp)
-    (define-key paredit-mode-map (kbd ".") 'paredit-forward-slurp-sexp))
-
-  ;; turn paredit on for all lispy modes
-  (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-  (add-hook 'lisp-mode-hook 'paredit-mode)
-  (add-hook 'scheme-mode-hook 'paredit-mode)
-  (add-hook 'ielm-mode-hook 'paredit-mode)
-
-  ;; turn on paredit for Cask files too
-  (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
-#+end_src
-
-
-** TypeScript
-Setup Typescript to use lsp
-
-#+begin_src emacs-lisp
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
-  :config
-  (setq typescript-indent-level 2))
-#+end_src
-
-
-** Python
-
-Setup lsp for python
-#+begin_src emacs-lisp
-(use-package python-mode
-  :ensure t
-  :hook (python-mode . lsp-deferred)
-  :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-  (dap-python-debugger 'debugpy)
-  :config
-  (require 'dap-python))
-#+end_src
-
-
-* Projectile
-
-#+begin_src emacs-lisp
-(use-package projectile
-  :diminish projectile-mode
-  :config (projectile-mode)
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/Projects/Code")
-    (setq projectile-project-search-path '("~/Projects/Code")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-#+end_src
-
-
-* Company 
+** Company 
 
 Company Mode provides a nicer in-buffer completion interface than completion-at-point which is more reminiscent of what you would expect from an IDE. We add a simple configuration to make the keybindings a little more useful (TAB now completes the selection and initiates completion at the current location if needed).
 
@@ -462,11 +394,81 @@ We also use company-box to further enhance the look of the completions with icon
 
 #+end_src
 
+** Projectile
+
+#+begin_src emacs-lisp
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+  (when (file-directory-p "~/projects/")
+    (setq projectile-project-search-path '("~/projects/")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+#+end_src
+
+** Languages
+*** Emacs Lisp
+
+Paredit mode
+
+#+begin_src emacs-lisp
+(use-package paredit
+  :config
+  
+  ;; slurping in a terminal doesn't quite work, so rebind keys so they do
+  (unless (display-graphic-p)
+    (define-key paredit-mode-map (kbd ",") 'paredit-backward-slurp-sexp)
+    (define-key paredit-mode-map (kbd ".") 'paredit-forward-slurp-sexp))
+
+  ;; turn paredit on for all lispy modes
+  (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+  (add-hook 'lisp-mode-hook 'paredit-mode)
+  (add-hook 'scheme-mode-hook 'paredit-mode)
+  (add-hook 'ielm-mode-hook 'paredit-mode)
+
+  ;; turn on paredit for Cask files too
+  (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
+#+end_src
+
+*** TypeScript
+Setup Typescript to use lsp
+
+#+begin_src emacs-lisp
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+#+end_src
+
+*** Python
+
+Setup lsp for python
+#+begin_src emacs-lisp
+(use-package python-mode
+  :ensure t
+  :hook (python-mode . lsp-deferred)
+  :custom
+  ;; NOTE: Set these if Python 3 is called "python3" on your system!
+  ;; (python-shell-interpreter "python3")
+  ;; (dap-python-executable "python3")
+;;  (dap-python-debugger 'debugpy)
+  :config
+;;  (require 'dap-python)
+  )
+#+end_src
 
 * Treemacs
 Default setup for treemacs
 Disabling for the moment
-#+begin_src
+#+begin_src emacs-lisp
 (use-package treemacs
   :ensure t
   :defer t
@@ -513,10 +515,9 @@ Disabling for the moment
           treemacs-tag-follow-delay              1.5
           treemacs-user-mode-line-format         nil
           treemacs-user-header-line-format       nil
-          treemacs-width                         35
+          treemacs-width                         20
           treemacs-workspace-switch-cleanup      nil)))
 #+end_src
-
 
 * Closing
 
