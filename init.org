@@ -195,17 +195,16 @@ A quick function to set the transparency of emacs when in window mode. I've foun
   
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t))
+  (setq org-log-into-drawer t)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
 
    #+end_src
-
 
 ** Babel
  
   #+begin_src emacs-lisp
    (setf org-src-preserve-indentation t)
    #+end_src
-
 
 ** Structure Templates
 
@@ -219,7 +218,6 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
  #+end_src
  
-
 ** Auto-tangle
 
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
@@ -237,7 +235,6 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 
 #+end_src
 
-
 ** Center Org Buffers
 
 We use visual-fill-column to center org-mode buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document. This is really a matter of personal preference so you can remove the block below if you don’t like the behavior.
@@ -251,7 +248,6 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
 #+end_src
-
 
 ** Agenda
 
