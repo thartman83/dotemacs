@@ -143,7 +143,6 @@ Setup SauceCodePro from Nerd Font as the default font for buffers.
  
 #+end_src
 
-
 ** Theme
 From the doom themes package use the doom-dracula theme
 
@@ -153,7 +152,6 @@ From the doom themes package use the doom-dracula theme
   :init (load-theme 'doom-dracula t))
 
 #+end_src
-
 
 ** Transparency
 A quick function to set the transparency of emacs when in window mode. I've found 80% to be the most comfortable.
@@ -177,8 +175,17 @@ A quick function to set the transparency of emacs when in window mode. I've foun
   (setq which-key-idle-delay 1))
 #+end_src
 
-* Org Mode
+** Centering buffers
+Helper function to center certain buffers.
 
+#+begin_src emacs-lisp
+(defun efs/visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+#+end_src
+
+* Org Mode
 ** General
    #+begin_src emacs-lisp
    
@@ -240,13 +247,9 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
 We use visual-fill-column to center org-mode buffers for a more pleasing writing experience as it centers the contents of the buffer horizontally to seem more like you are editing a document. This is really a matter of personal preference so you can remove the block below if you don’t like the behavior.
 
 #+begin_src emacs-lisp
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
 
 (use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
+  :hook (org-mode . efs/visual-fill))
 #+end_src
 
 ** Agenda
@@ -293,6 +296,7 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 * Magit
 #+begin_src emacs-lisp
 (use-package magit
+  :hook (magit-mode . efs/visual-fill)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
@@ -451,12 +455,12 @@ Setup lsp for python
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
-  :custom
+;;  :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   ;; (python-shell-interpreter "python3")
   ;; (dap-python-executable "python3")
 ;;  (dap-python-debugger 'debugpy)
-  :config
+;;  :config
 ;;  (require 'dap-python)
   )
 #+end_src
