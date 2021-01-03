@@ -96,6 +96,11 @@
   :config
   (setq which-key-idle-delay 1))
 
+(defun efs/visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
@@ -109,7 +114,8 @@
   
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t))
+  (setq org-log-into-drawer t)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
 
    (setf org-src-preserve-indentation t)
 
@@ -129,13 +135,8 @@
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
-(defun efs/org-mode-visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
-
 (use-package visual-fill-column
-  :hook (org-mode . efs/org-mode-visual-fill))
+  :hook (org-mode . efs/visual-fill))
 
 
 
@@ -171,6 +172,7 @@
   (ivy-rich-mode 1))
 
 (use-package magit
+  :hook (magit-mode . efs/visual-fill)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
@@ -256,12 +258,12 @@
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
-  :custom
+;;  :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   ;; (python-shell-interpreter "python3")
   ;; (dap-python-executable "python3")
-  (dap-python-debugger 'debugpy)
-  :config
+;;  (dap-python-debugger 'debugpy)
+;;  :config
 ;;  (require 'dap-python)
   )
 
