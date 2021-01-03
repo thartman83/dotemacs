@@ -3,7 +3,6 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ./init-test.el
 
 * General Setup
-
 ** Preamble
 This section contains the license and commentary for this elisp file. This both makes my elisp linter happy and also makes me happy. Or at least makes me feel like a responsible programmer.
 
@@ -48,7 +47,6 @@ This configuration uses the GPL v2 license.
 ;;; Code:
 #+end_src
 
-
 ** Bars
  Remove the menu, scroll, and toolbar. Remove the basic line number
  mode as well.
@@ -60,7 +58,6 @@ This configuration uses the GPL v2 license.
  (tool-bar-mode -1)
 
  #+end_src
-
 
 ** Line Numbers
 #+begin_src emacs-lisp
@@ -87,7 +84,6 @@ This configuration uses the GPL v2 license.
 
 #+end_src
 
-
 ** Frist Buffer
 
 Go directly to scratch buffer, do not pass go
@@ -96,7 +92,6 @@ Go directly to scratch buffer, do not pass go
 (setq startup-screen-inhibit-startup-screen t)
 
 #+end_src
-
 
 ** Package Setup
 Initialize the package repositories. Org mode in mainline emacs can be behind the stable development curve so add that in, in addition to melpa.
@@ -143,7 +138,6 @@ Setup SauceCodePro from Nerd Font as the default font for buffers.
  
 #+end_src
 
-
 ** Theme
 From the doom themes package use the doom-dracula theme
 
@@ -153,7 +147,6 @@ From the doom themes package use the doom-dracula theme
   :init (load-theme 'doom-dracula t))
 
 #+end_src
-
 
 ** Transparency
 A quick function to set the transparency of emacs when in window mode. I've found 80% to be the most comfortable.
@@ -168,7 +161,17 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 (set-transparency 80)
 #+end_src
 
+* UI Improvements
+** Multiple Cursors
+Initialize multiple cursors mode
+
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :ensure t)
+#+end_src
+
 ** Which-key
+
 #+begin_src emacs-lisp
 (use-package which-key
   :init (which-key-mode)
@@ -178,7 +181,6 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 #+end_src
 
 * Org Mode
-
 ** General
    #+begin_src emacs-lisp
    
@@ -199,13 +201,11 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
    #+end_src
 
-
 ** Babel
  
   #+begin_src emacs-lisp
    (setf org-src-preserve-indentation t)
    #+end_src
-
 
 ** Structure Templates
 
@@ -219,7 +219,6 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
  #+end_src
  
-
 ** Auto-tangle
 
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
@@ -234,9 +233,7 @@ This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config
       (org-babel-tangle))))
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
-
 #+end_src
-
 
 ** Center Org Buffers
 
@@ -251,7 +248,6 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
 #+end_src
-
 
 ** Agenda
 
@@ -455,14 +451,91 @@ Setup lsp for python
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
-  :custom
+ ;; :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   ;; (python-shell-interpreter "python3")
   ;; (dap-python-executable "python3")
 ;;  (dap-python-debugger 'debugpy)
-  :config
+;;  :config
 ;;  (require 'dap-python)
   )
+#+end_src
+
+**** Jedi Language Server
+
+#+begin_src emacs-lisp
+(use-package jedi)
+
+(use-package lsp-jedi
+  :ensure t
+  :config
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)))
+#+end_src
+
+*** Open Scad
+Initialize open scad mode
+#+begin_src emacs-lisp
+(use-package scad-mode)
+(use-package scad-preview
+  :mode "\\.scad\\"
+  :custom
+  (scad-preview-image-size '(900 . 900))
+  :config
+  (defun scad-export-stl ()
+    "Exports the current visited filename as an stl file."
+    (interactive)
+    (call-process "openscad" nil "*openscad-output*" t
+                  "-o" (f-swap-ext (f-filename (buffer-file-name)) "stl")
+                  (buffer-file-name))))
+#+end_src
+
+*** Lisp
+
+**** Slime
+#+begin_src
+(use-package slime
+  :custom
+  (inferior-lisp-program "/usr/bin/sbcl")
+  :config
+  (add-hook 'lisp-mode-hook '(lambda () (slime-mode)))
+  (slime-setup '(slime-repl slime-fuzzy)))
+#+end_src
+
+*** Lua 
+
+Setup Lua the way I like it
+#+begin_src emacs-lisp
+(use-package lua-mode
+  :hook (lua-mode . lsp-deferred))
+#+end_src
+
+**** Lua Language Server
+Installation
+
+#+begin_src sh
+# clone project
+git clone https://github.com/sumneko/lua-language-server
+cd lua-language-server
+git submodule update --init --recursive
+
+cd 3rd/luamake
+ninja -f ninja/linux.ninja
+cd ../..
+./3rd/luamake/luamake rebuild
+
+mkdir -P ~/.emacs.d/.cache/lsp/lua-language-server/
+
+cp bin/Linux/lua-language-server ~/.emacs.d/.cache/lsp/lua-language-server/
+cp main.lua ~/.emacs.d/.cache/lsp/lua-language-server/
+#+end_src
+
+*** HTML
+Add emmet mode to html mode
+#+begin_src emacs-lisp
+(use-package emmet-mode
+  :hook (html-mode-hook . emmet-mode))
 #+end_src
 
 * Treemacs

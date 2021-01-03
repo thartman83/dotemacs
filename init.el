@@ -315,3 +315,16 @@
           treemacs-workspace-switch-cleanup      nil)))
 
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(emmet-mode lua-mode lsp-jedi auto-package-update which-key visual-fill-column use-package typescript-mode python-mode paredit lsp-ui ivy-rich forge flycheck doom-themes dap-mode counsel-projectile company-box)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
