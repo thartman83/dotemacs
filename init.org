@@ -1,7 +1,7 @@
 #+TITLE: Emacs configuration
 #+AUTHOR: Tom Hartman
 #+PROPERTY: header-args:emacs-lisp :tangle ./init-test.el
-
+ 
 * General Setup
 ** Preamble
 This section contains the license and commentary for this elisp file. This both makes my elisp linter happy and also makes me happy. Or at least makes me feel like a responsible programmer.
@@ -161,6 +161,16 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 (set-transparency 80)
 #+end_src
 
+** Mixed Pitch
+By default org mode is set to use variable pitch mode with tables using fixed pitch but this doesn't quite work as advertise. Mixed pitch mode resolves this issue. Setup is pretty straight forward just add a hook  for org-mode to enable mixed-pitch-mode.
+
+To enable for all text modes add a hook for text-mode.
+
+#+begin_src emacs-lisp
+(use-package mixed-pitch
+  :hook (org-mode . mixed-pitch-mode))
+#+end_src
+
 * UI Improvements
 ** Multiple Cursors
 Initialize multiple cursors mode
@@ -247,6 +257,17 @@ We use visual-fill-column to center org-mode buffers for a more pleasing writing
 
 (use-package visual-fill-column
   :hook (org-mode . efs/org-mode-visual-fill))
+#+end_src
+
+** Better Bullets
+org-bullets replaces the heading stars in org-mode buffers with nicer looking characters that you can control. Another option for this is org-superstar-mode which we may cover in a later video.
+
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 
 ** Agenda
@@ -492,7 +513,6 @@ Initialize open scad mode
 #+end_src
 
 *** Lisp
-
 **** Slime
 #+begin_src
 (use-package slime
@@ -541,7 +561,7 @@ Add emmet mode to html mode
 * Treemacs
 Default setup for treemacs
 Disabling for the moment
-#+begin_src emacs-lisp
+#+begin_src
 (use-package treemacs
   :ensure t
   :defer t

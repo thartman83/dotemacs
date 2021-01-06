@@ -90,16 +90,17 @@
    
 (set-transparency 80)
 
+(use-package mixed-pitch
+  :hook (org-mode . mixed-pitch-mode))
+
+(use-package multiple-cursors
+  :ensure t)
+
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
-
-(defun efs/visual-fill ()
-  (setq visual-fill-column-width 100
-        visual-fill-column-center-text t)
-  (visual-fill-column-mode 1))
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -114,8 +115,7 @@
   
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (set-face-attribute 'org-table nil :inherit 'fixed-pitch))
+  (setq org-log-into-drawer t))
 
    (setf org-src-preserve-indentation t)
 
@@ -135,8 +135,19 @@
 
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'efs/org-babel-tangle-config)))
 
+(defun efs/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
 (use-package visual-fill-column
-  :hook (org-mode . efs/visual-fill))
+  :hook (org-mode . efs/org-mode-visual-fill))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 
 
@@ -172,7 +183,6 @@
   (ivy-rich-mode 1))
 
 (use-package magit
-  :hook (magit-mode . efs/visual-fill)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
@@ -258,7 +268,7 @@
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
-;;  :custom
+ ;; :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
   ;; (python-shell-interpreter "python3")
   ;; (dap-python-executable "python3")
@@ -267,66 +277,32 @@
 ;;  (require 'dap-python)
   )
 
-(use-package treemacs
+(use-package jedi)
+
+(use-package lsp-jedi
   :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
   :config
-  (progn
-    (setq treemacs-collapse-dirs                 (if treemacs-python-executable 3 0)
-          treemacs-deferred-git-apply-delay      0.5
-          treemacs-directory-name-transformer    #'identity
-          treemacs-display-in-side-window        t
-          treemacs-eldoc-display                 t
-          treemacs-file-event-delay              5000
-          treemacs-file-extension-regex          treemacs-last-period-regex-value
-          treemacs-file-follow-delay             0.2
-          treemacs-file-name-transformer         #'identity
-          treemacs-follow-after-init             t
-          treemacs-git-command-pipe              ""
-          treemacs-goto-tag-strategy             'refetch-index
-          treemacs-indentation                   2
-          treemacs-indentation-string            " "
-          treemacs-is-never-other-window         nil
-          treemacs-max-git-entries               5000
-          treemacs-missing-project-action        'ask
-          treemacs-move-forward-on-expand        nil
-          treemacs-no-png-images                 nil
-          treemacs-no-delete-other-windows       t
-          treemacs-project-follow-cleanup        nil
-          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
-          treemacs-position                      'left
-          treemacs-recenter-distance             0.1
-          treemacs-recenter-after-file-follow    nil
-          treemacs-recenter-after-tag-follow     nil
-          treemacs-recenter-after-project-jump   'always
-          treemacs-recenter-after-project-expand 'on-distance
-          treemacs-show-cursor                   nil
-          treemacs-show-hidden-files             t
-          treemacs-silent-filewatch              nil
-          treemacs-silent-refresh                nil
-          treemacs-sorting                       'alphabetic-asc
-          treemacs-space-between-root-nodes      t
-          treemacs-tag-follow-cleanup            t
-          treemacs-tag-follow-delay              1.5
-          treemacs-user-mode-line-format         nil
-          treemacs-user-header-line-format       nil
-          treemacs-width                         20
-          treemacs-workspace-switch-cleanup      nil)))
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)))
+
+(use-package scad-mode)
+(use-package scad-preview
+  :mode "\\.scad\\"
+  :custom
+  (scad-preview-image-size '(900 . 900))
+  :config
+  (defun scad-export-stl ()
+    "Exports the current visited filename as an stl file."
+    (interactive)
+    (call-process "openscad" nil "*openscad-output*" t
+                  "-o" (f-swap-ext (f-filename (buffer-file-name)) "stl")
+                  (buffer-file-name))))
+
+(use-package lua-mode
+  :hook (lua-mode . lsp-deferred))
+
+(use-package emmet-mode
+  :hook (html-mode-hook . emmet-mode))
 
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(emmet-mode lua-mode lsp-jedi auto-package-update which-key visual-fill-column use-package typescript-mode python-mode paredit lsp-ui ivy-rich forge flycheck doom-themes dap-mode counsel-projectile company-box)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
