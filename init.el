@@ -303,6 +303,6 @@
   :hook (lua-mode . lsp-deferred))
 
 (use-package emmet-mode
-  :hook (html-mode-hook . emmet-mode))
+  :hook (mhtml-mode . emmet-mode))
 
 ;;; init.el ends here

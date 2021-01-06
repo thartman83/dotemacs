@@ -555,7 +555,7 @@ cp main.lua ~/.emacs.d/.cache/lsp/lua-language-server/
 Add emmet mode to html mode
 #+begin_src emacs-lisp
 (use-package emmet-mode
-  :hook (html-mode-hook . emmet-mode))
+  :hook (mhtml-mode . emmet-mode))
 #+end_src
 
 * Treemacs
