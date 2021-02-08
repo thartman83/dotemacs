@@ -88,7 +88,7 @@
 
   (set-frame-parameter (selected-frame) 'alpha value))
    
-(set-transparency 80)
+(set-transparency 90)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -263,7 +263,8 @@
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2)
+  (add-to-list 'lsp-enabled-clients 'ts-ls))
 
 (use-package python-mode
   :ensure t
@@ -277,6 +278,9 @@
 ;;  (require 'dap-python)
   )
 
+(use-package pyvenv)
+(pyvenv-activate "~/venv/")
+
 (use-package jedi)
 
 (use-package lsp-jedi
@@ -288,7 +292,7 @@
 
 (use-package scad-mode)
 (use-package scad-preview
-  :mode "\\.scad\\"
+  :mode "\\.scad\\'"
   :custom
   (scad-preview-image-size '(900 . 900))
   :config
@@ -300,9 +304,35 @@
                   (buffer-file-name))))
 
 (use-package lua-mode
-  :hook (lua-mode . lsp-deferred))
+  :hook (lua-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp))
 
 (use-package emmet-mode
   :hook (html-mode-hook . emmet-mode))
 
+(use-package origami
+  :config
+  (global-origami-mode))
+
+(use-package yasnippet
+  :custom
+  (yas/root-directory '("~/.emacs.d/snippets"))
+  :config
+  (yas-global-mode 1)
+  (mapc #'yas-load-directory yas/root-directory))
+
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(restclient yasnippet which-key visual-fill-column use-package undercover typescript-mode slime skeletor scad-preview pyvenv python-mode paredit overseer origami org-dashboard org-bullets noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes diminish deft dashboard dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

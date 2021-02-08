@@ -126,6 +126,29 @@ Setup the use-package package as well for ease of package management and configu
    
    #+end_src
 
+** Constants
+#+begin_src emacs-lisp
+(defvar *full-name* "Tom Hartman")
+(defvar *email* "thomas.lees.hartman@gmail.com")
+
+#+end_src
+
+* Utilities
+
+** Comment lines
+#+begin_src emacs-lisp
+(defun tlh/comment-lines (str beg end line-width)
+  "Return a commented version of STR using BEG, END and LINE-WIDTH."
+  (let ((lines (split-string str "\n")))
+    (mapconcat #'(lambda (line)
+                   (concat beg " " str (make-string (- line-width
+                                                       (length str)
+                                                       (+ (length beg) 1)
+                                                       (length end)) ? )
+                           end)) lines "\n")))
+
+#+end_src
+
 * Apperance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
 
@@ -158,7 +181,7 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
   (set-frame-parameter (selected-frame) 'alpha value))
    
-(set-transparency 80)
+(set-transparency 90)
 #+end_src
 
 ** Mixed Pitch
@@ -462,7 +485,8 @@ Setup Typescript to use lsp
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2)
+  (add-to-list 'lsp-enabled-clients 'ts-ls))
 #+end_src
 
 *** Python
@@ -482,6 +506,12 @@ Setup lsp for python
   )
 #+end_src
 
+**** pyenv
+#+begin_src emacs-lisp
+(use-package pyvenv)
+(pyvenv-activate "~/venv/")
+
+#+end_src
 **** Jedi Language Server
 
 #+begin_src emacs-lisp
@@ -500,7 +530,7 @@ Initialize open scad mode
 #+begin_src emacs-lisp
 (use-package scad-mode)
 (use-package scad-preview
-  :mode "\\.scad\\"
+  :mode "\\.scad\\'"
   :custom
   (scad-preview-image-size '(900 . 900))
   :config
@@ -528,7 +558,9 @@ Initialize open scad mode
 Setup Lua the way I like it
 #+begin_src emacs-lisp
 (use-package lua-mode
-  :hook (lua-mode . lsp-deferred))
+  :hook (lua-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp))
 #+end_src
 
 **** Lua Language Server
@@ -556,6 +588,14 @@ Add emmet mode to html mode
 #+begin_src emacs-lisp
 (use-package emmet-mode
   :hook (html-mode-hook . emmet-mode))
+#+end_src
+
+** Origami
+Origami folding library
+#+begin_src emacs-lisp
+(use-package origami
+  :config
+  (global-origami-mode))
 #+end_src
 
 * Treemacs
@@ -610,6 +650,22 @@ Disabling for the moment
           treemacs-user-header-line-format       nil
           treemacs-width                         20
           treemacs-workspace-switch-cleanup      nil)))
+#+end_src
+
+* yassnippet
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :custom
+  (yas/root-directory '("~/.emacs.d/snippets"))
+  :config
+  (yas-global-mode 1)
+  (mapc #'yas-load-directory yas/root-directory))
+
+#+end_src
+
+* RestClient
+#+begin_src emacs-lisp
+(use-package restclient)
 #+end_src
 
 * Closing
