@@ -288,7 +288,7 @@
 
 (use-package scad-mode)
 (use-package scad-preview
-  :mode "\\.scad\\"
+  :mode "\\.scad"
   :custom
   (scad-preview-image-size '(900 . 900))
   :config
