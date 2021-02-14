@@ -77,10 +77,23 @@
 	      auto-package-update-interval 4)
 	(auto-package-update-maybe))
 
+(defvar *full-name* "Tom Hartman")
+(defvar *email* "thomas.lees.hartman@gmail.com")
+
+(defun tlh/comment-lines (str beg end line-width)
+  "Return a commented version of STR using BEG, END and LINE-WIDTH."
+  (let ((lines (split-string str "\n")))
+    (mapconcat #'(lambda (line)
+                   (concat beg " " str (make-string (- line-width
+                                                       (length str)
+                                                       (+ (length beg) 1)
+                                                       (length end)) ? )
+                           end)) lines "\n")))
+
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 (use-package doom-themes
-  :init (load-theme 'doom-dracula t))
+  :init (load-theme 'doom-sourcerer t))
 
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
@@ -322,6 +335,8 @@
   (yas-global-mode 1)
   (mapc #'yas-load-directory yas/root-directory))
 
+(use-package restclient)
+
 ;;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -329,7 +344,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(restclient yasnippet which-key visual-fill-column use-package undercover typescript-mode slime skeletor scad-preview pyvenv python-mode paredit overseer origami org-dashboard org-bullets noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes diminish deft dashboard dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers)))
+   '(all-the-icons-dired restclient yasnippet which-key visual-fill-column use-package typescript-mode slime scad-preview pyvenv python-mode paredit origami org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi jedi ivy-rich forge flycheck emmet-mode doom-themes dap-mode counsel-projectile company-box auto-package-update async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
