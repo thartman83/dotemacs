@@ -344,7 +344,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(all-the-icons-dired restclient yasnippet which-key visual-fill-column use-package typescript-mode slime scad-preview pyvenv python-mode paredit origami org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi jedi ivy-rich forge flycheck emmet-mode doom-themes dap-mode counsel-projectile company-box auto-package-update async)))
+   '(yaml-mode all-the-icons-dired restclient yasnippet which-key visual-fill-column use-package typescript-mode slime scad-preview pyvenv python-mode paredit origami org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi jedi ivy-rich forge flycheck emmet-mode doom-themes dap-mode counsel-projectile company-box auto-package-update async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -597,6 +597,12 @@ Add emmet mode to html mode
   :hook (mhtml-mode . emmet-mode))
 #+end_src
 
+*** YAML
+Setup yaml support
+#+begin_src emacs-lisp
+(use-package yaml-mode)
+#+end_src
+
 ** Origami
 Origami folding library
 #+begin_src emacs-lisp
