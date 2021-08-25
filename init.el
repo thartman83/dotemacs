@@ -93,7 +93,7 @@
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 (use-package doom-themes
-  :init (load-theme 'doom-dracula t))
+  :init (load-theme 'doom-sourcerer t))
 
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
@@ -373,7 +373,7 @@
   (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp))
 
 (use-package emmet-mode
-  :hook (html-mode-hook . emmet-mode))
+  :hook (mhtml-mode . emmet-mode))
 
 (use-package origami
   :config
@@ -395,3 +395,16 @@
 (use-package restclient)
 
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(yaml-mode all-the-icons-dired restclient yasnippet which-key visual-fill-column use-package typescript-mode slime scad-preview pyvenv python-mode paredit origami org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi jedi ivy-rich forge flycheck emmet-mode doom-themes dap-mode counsel-projectile company-box auto-package-update async)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -167,7 +167,7 @@ From the doom themes package use the doom-dracula theme
 #+begin_src emacs-lisp
 
 (use-package doom-themes
-  :init (load-theme 'doom-dracula t))
+  :init (load-theme 'doom-sourcerer t))
 
 #+end_src
 
@@ -192,6 +192,13 @@ To enable for all text modes add a hook for text-mode.
 #+begin_src emacs-lisp
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
+#+end_src
+
+** All Icon Mode
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired
+  :config
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+end_src
 
 * UI Improvements
@@ -658,7 +665,13 @@ cp main.lua ~/.emacs.d/.cache/lsp/lua-language-server/
 Add emmet mode to html mode
 #+begin_src emacs-lisp
 (use-package emmet-mode
-  :hook (html-mode-hook . emmet-mode))
+  :hook (mhtml-mode . emmet-mode))
+#+end_src
+
+*** YAML
+Setup yaml support
+#+begin_src emacs-lisp
+(use-package yaml-mode)
 #+end_src
 
 ** Origami
