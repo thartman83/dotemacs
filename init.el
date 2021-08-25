@@ -77,6 +77,19 @@
 	      auto-package-update-interval 4)
 	(auto-package-update-maybe))
 
+(defvar *full-name* "Tom Hartman")
+(defvar *email* "thomas.lees.hartman@gmail.com")
+
+(defun tlh/comment-lines (str beg end line-width)
+  "Return a commented version of STR using BEG, END and LINE-WIDTH."
+  (let ((lines (split-string str "\n")))
+    (mapconcat #'(lambda (line)
+                   (concat beg " " str (make-string (- line-width
+                                                       (length str)
+                                                       (+ (length beg) 1)
+                                                       (length end)) ? )
+                           end)) lines "\n")))
+
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 (use-package doom-themes
@@ -110,9 +123,11 @@
 (use-package org
   :pin org
   :hook (org-mode . efs/org-mode-setup)
+  :ensure org-plus-contrib
   :config
+  (auto-fill-mode)
   (setq org-ellipsis " ▾")
-  
+  (setq org-return-follows-link t)
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t))
@@ -150,6 +165,55 @@
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 
+
+(defun org-export-as-pdf-and-open ()
+  (interactive)
+  (save-buffer)
+  (org-open-file (org-latex-export-to-pdf)))
+
+(add-hook 
+ 'org-mode-hook
+ (lambda()
+   (define-key org-mode-map 
+       (kbd "<f5>") 'org-export-as-pdf-and-open)))
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/notes")
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("h" "house project" plain
+      (file "~/org/templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)))
+  :bind  (("C-c n l" . org-roam-buffer-toggle)
+	  ("C-c n f" . org-roam-node-find)
+	  ("C-c n i" . org-roam-node-insert)
+	  :map org-mode-map
+	  ("C-M-i"   . completion-at-point))
+  :config
+  (org-roam-setup))
+
+(use-package org-contacts
+  :ensure nil
+  :after org
+  :custom (org-contacts-files '("~/org/contacts.org")))
+
+(use-package org-capture
+  :ensure nil
+  :after org
+  :custom
+  (org-capture-templates
+   `(("f" "Friend" entry (file+headline "~/org/contacts.org" "Friends"),
+      (file "~/org/templates/contact-friend.org")
+      :empty-lines 1))))
 
 (use-package ivy
   :diminish
@@ -315,6 +379,12 @@
   :config
   (global-origami-mode))
 
+(use-package yaml-mode)
+
+(use-package dockerfile-mode)
+
+(use-package docker-compose-mode)
+
 (use-package yasnippet
   :custom
   (yas/root-directory '("~/.emacs.d/snippets"))
@@ -322,17 +392,6 @@
   (yas-global-mode 1)
   (mapc #'yas-load-directory yas/root-directory))
 
+(use-package restclient)
+
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(restclient yasnippet which-key visual-fill-column use-package undercover typescript-mode slime skeletor scad-preview pyvenv python-mode paredit overseer origami org-dashboard org-bullets noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes diminish deft dashboard dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

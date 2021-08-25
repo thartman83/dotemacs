@@ -215,7 +215,10 @@ Initialize multiple cursors mode
 
 * Org Mode
 ** General
-   #+begin_src emacs-lisp
+General setup for org mode files, some of this is to enhance
+readability as well as associate certain minor modes and other constants.
+
+#+begin_src emacs-lisp
    
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -225,14 +228,16 @@ Initialize multiple cursors mode
 (use-package org
   :pin org
   :hook (org-mode . efs/org-mode-setup)
+  :ensure org-plus-contrib
   :config
+  (auto-fill-mode)
   (setq org-ellipsis " ▾")
-  
+  (setq org-return-follows-link t)
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t))
 
-   #+end_src
+#+end_src
 
 ** Babel
  
@@ -299,6 +304,72 @@ org-bullets replaces the heading stars in org-mode buffers with nicer looking ch
 
 #+end_src
 
+** Resume
+Setup some conviencing functions and bindings for resume org files.
+#+begin_src emacs-lisp
+(defun org-export-as-pdf-and-open ()
+  (interactive)
+  (save-buffer)
+  (org-open-file (org-latex-export-to-pdf)))
+
+(add-hook 
+ 'org-mode-hook
+ (lambda()
+   (define-key org-mode-map 
+       (kbd "<f5>") 'org-export-as-pdf-and-open)))
+#+end_src
+
+** org-roam
+Setup org-roam note taking and file management. After loading the package, you can check the variable `org-roam--sqlite-available-p' to verify that the sqlite database is available.
+
+#+begin_src emacs-lisp
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/notes")
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("h" "house project" plain
+      (file "~/org/templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)))
+  :bind  (("C-c n l" . org-roam-buffer-toggle)
+	  ("C-c n f" . org-roam-node-find)
+	  ("C-c n i" . org-roam-node-insert)
+	  :map org-mode-map
+	  ("C-M-i"   . completion-at-point))
+  :config
+  (org-roam-setup))
+#+end_src
+
+** org-contacts
+Use org-contacts to create and manage contacts in org mode.
+
+#+begin_src emacs-lisp
+(use-package org-contacts
+  :ensure nil
+  :after org
+  :custom (org-contacts-files '("~/org/contacts.org")))
+#+end_src
+
+** org-capture
+Customizations to org mode capture templates
+#+begin_src emacs-lisp
+(use-package org-capture
+  :ensure nil
+  :after org
+  :custom
+  (org-capture-templates
+   `(("f" "Friend" entry (file+headline "~/org/contacts.org" "Friends"),
+      (file "~/org/templates/contact-friend.org")
+      :empty-lines 1))))
+#+end_src
 * Ivy and Counsel
 #+begin_src emacs-lisp
 (use-package ivy
@@ -598,6 +669,19 @@ Origami folding library
   (global-origami-mode))
 #+end_src
 
+** YAML
+#+begin_src emacs-lisp
+(use-package yaml-mode)
+#+end_src
+* Docker 
+** Docker File Mode
+#+begin_src emacs-lisp
+(use-package dockerfile-mode)
+#+end_src
+** Docker Compose 
+#+begin_src emacs-lisp
+(use-package docker-compose-mode)
+#+end_src
 * Treemacs
 Default setup for treemacs
 Disabling for the moment
