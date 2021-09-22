@@ -21,3 +21,4 @@ site=lisp/*~
 /tutorial/*
 /custom.el
 /abbrev_defs
+/org-roam.db

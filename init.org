@@ -686,15 +686,18 @@ Origami folding library
 #+begin_src emacs-lisp
 (use-package yaml-mode)
 #+end_src
+
 * Docker 
 ** Docker File Mode
 #+begin_src emacs-lisp
 (use-package dockerfile-mode)
 #+end_src
+
 ** Docker Compose 
 #+begin_src emacs-lisp
 (use-package docker-compose-mode)
 #+end_src
+
 * Treemacs
 Default setup for treemacs
 Disabling for the moment
