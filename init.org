@@ -201,6 +201,13 @@ To enable for all text modes add a hook for text-mode.
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+end_src
 
+** Highlight Parenthesis
+#+begin_src emacs-lisp
+(use-package paren
+  :config
+  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
+  (show-paren-mode 1))
+#+end_src
 * UI Improvements
 ** Multiple Cursors
 Initialize multiple cursors mode
