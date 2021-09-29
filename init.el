@@ -168,7 +168,7 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-
+(setf org-agenda-files '("~/notes/journal"))
 
 (defun org-export-as-pdf-and-open ()
   (interactive)
@@ -180,34 +180,6 @@
  (lambda()
    (define-key org-mode-map 
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
-
-(use-package org-roam
-  :ensure t
-  :init
-  (setq org-roam-v2-ack t)
-  :custom
-  (org-roam-directory "~/notes")
-  (org-roam-dailies-directory "journal/")
-  (org-roam-completion-everywhere t)
-  (org-roam-capture-templates
-   '(("d" "default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)
-     ("h" "house project" plain
-      (file "~/org/templates/house-project.org")
-      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
-      :unnarrowed t)))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-	 ("C-c n f" . org-roam-node-find)
-	 ("C-c n i" . org-roam-node-insert)
-	 :map org-mode-map
-	 ("C-M-i"   . completion-at-point))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (org-roam-setup)
-  (org-roam-db-autosync-mode))
 
 (use-package org-contacts
   :ensure nil
