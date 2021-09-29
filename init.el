@@ -106,6 +106,10 @@
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
 
+(use-package all-the-icons-dired
+  :config
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+
 (use-package multiple-cursors
   :ensure t)
 
@@ -183,6 +187,7 @@
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory "~/notes")
+  (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
    '(("d" "default" plain
@@ -193,27 +198,21 @@
       (file "~/org/templates/house-project.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
-  :bind  (("C-c n l" . org-roam-buffer-toggle)
-	  ("C-c n f" . org-roam-node-find)
-	  ("C-c n i" . org-roam-node-insert)
-	  :map org-mode-map
-	  ("C-M-i"   . completion-at-point))
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+	 ("C-c n f" . org-roam-node-find)
+	 ("C-c n i" . org-roam-node-insert)
+	 :map org-mode-map
+	 ("C-M-i"   . completion-at-point))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
   :config
-  (org-roam-setup))
+  (org-roam-setup)
+  (org-roam-db-autosync-mode))
 
 (use-package org-contacts
   :ensure nil
   :after org
   :custom (org-contacts-files '("~/org/contacts.org")))
-
-(use-package org-capture
-  :ensure nil
-  :after org
-  :custom
-  (org-capture-templates
-   `(("f" "Friend" entry (file+headline "~/org/contacts.org" "Friends"),
-      (file "~/org/templates/contact-friend.org")
-      :empty-lines 1))))
 
 (use-package ivy
   :diminish
@@ -375,6 +374,8 @@
 (use-package emmet-mode
   :hook (mhtml-mode . emmet-mode))
 
+(use-package yaml-mode)
+
 (use-package origami
   :config
   (global-origami-mode))
@@ -395,16 +396,3 @@
 (use-package restclient)
 
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(org-plus-contrib yaml-mode all-the-icons-dired restclient yasnippet which-key visual-fill-column use-package typescript-mode slime scad-preview pyvenv python-mode paredit origami org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi jedi ivy-rich forge flycheck emmet-mode doom-themes dap-mode counsel-projectile company-box auto-package-update async)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

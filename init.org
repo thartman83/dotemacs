@@ -348,6 +348,7 @@ Setup org-roam note taking and file management. After loading the package, you c
       (file "~/org/templates/house-project.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
+<<<<<<< HEAD
   :bind  (("C-c n l" . org-roam-buffer-toggle)
 	  ("C-c n f" . org-roam-node-find)
 	  ("C-c n i" . org-roam-node-insert)	  
@@ -356,6 +357,13 @@ Setup org-roam note taking and file management. After loading the package, you c
 	  :map org-roam-dailies-map
 	  ("Y" . org-roam-dailies-capture-yesterday)
 	  ("T" . org-roam-dailies-capture-tomorrow))
+=======
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+	 ("C-c n f" . org-roam-node-find)
+	 ("C-c n i" . org-roam-node-insert)
+	 :map org-mode-map
+	 ("C-M-i"   . completion-at-point))
+>>>>>>> origin/org-init
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :config
@@ -376,7 +384,7 @@ Use org-contacts to create and manage contacts in org mode.
 
 ** org-capture
 Customizations to org mode capture templates
-#+begin_src emacs-lisp
+#+begin_src 
 (use-package org-capture
   :ensure nil
   :after org
