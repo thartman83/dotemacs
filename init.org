@@ -308,7 +308,7 @@ org-bullets replaces the heading stars in org-mode buffers with nicer looking ch
 ** Agenda
 
 #+begin_src emacs-lisp
-
+(setf org-agenda-files '("~/notes/journal"))
 #+end_src
 
 ** Resume
@@ -326,7 +326,7 @@ Setup some conviencing functions and bindings for resume org files.
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
 #+end_src
 
-** org-roam
+** COMMENT org-roam
 Setup org-roam note taking and file management. After loading the package, you can check the variable `org-roam--sqlite-available-p' to verify that the sqlite database is available.
 
 #+begin_src emacs-lisp
@@ -336,6 +336,7 @@ Setup org-roam note taking and file management. After loading the package, you c
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory "~/notes")
+  (org-agenda-files '("~/notes/journal"))
   (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
@@ -347,16 +348,18 @@ Setup org-roam note taking and file management. After loading the package, you c
       (file "~/org/templates/house-project.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
-  (org-roam-dailies-capture-templates
-;;   '(("d" "default" entry "* 
   :bind  (("C-c n l" . org-roam-buffer-toggle)
 	  ("C-c n f" . org-roam-node-find)
 	  ("C-c n i" . org-roam-node-insert)	  
 	  :map org-mode-map
-	  ("C-M-i"   . completion-at-point))
+	  ("C-M-i"   . completion-at-point)
+	  :map org-roam-dailies-map
+	  ("Y" . org-roam-dailies-capture-yesterday)
+	  ("T" . org-roam-dailies-capture-tomorrow))
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :config
+  (require 'org-roam-dailies)
   (org-roam-setup)
   (org-roam-db-autosync-mode))
 #+end_src
