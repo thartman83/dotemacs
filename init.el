@@ -133,15 +133,21 @@
   :pin org
   :hook (org-mode . efs/org-mode-setup)
   :ensure org-plus-contrib
+  :bind (("C-c a" . org-agenda))
   :config
   (auto-fill-mode)
+  (setq org-startup-folded "fold")
   (setq org-ellipsis " ▾")
   (setq org-return-follows-link t)
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t))
 
-   (setf org-src-preserve-indentation t)
+(setf org-src-preserve-indentation t)
+
+(org-babel-do-load-languages 'org-babel-load-languages
+			     '((shell .t)
+			       (emacs-lisp . t)))
 
  (require 'org-tempo)
   
@@ -186,6 +192,40 @@
  (lambda()
    (define-key org-mode-map 
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/notes")
+  (org-agenda-files '("~/notes/journal"
+		      "~/notes/globals/recurring.org"))
+  (org-roam-dailies-directory "journal/")
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   '(("d" "default" plain
+      "%?"
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("h" "house project" plain
+      (file "~/org/templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)))
+  :bind  (("C-c n l" . org-roam-buffer-toggle)
+	  ("C-c n f" . org-roam-node-find)
+	  ("C-c n i" . org-roam-node-insert)	  
+	  :map org-mode-map
+	  ("C-M-i"   . completion-at-point)
+	  :map org-roam-dailies-map
+	  ("Y" . org-roam-dailies-capture-yesterday)
+	  ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies)
+  (org-roam-setup)
+  (org-roam-db-autosync-mode))
 
 (use-package org-contacts
   :ensure nil
