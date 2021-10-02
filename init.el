@@ -26,9 +26,9 @@
 
 ;;; Code:
 
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(tool-bar-mode -1)
+ (menu-bar-mode -1)
+ (scroll-bar-mode -1)
+ (tool-bar-mode -1)
 
 ;; Set up the visible bell
 (setq visible-bell t)
@@ -52,30 +52,30 @@
 
 (setq startup-screen-inhibit-startup-screen t)
 
-;; Initialize package sources
-(require 'package)
+     ;; Initialize package sources
+     (require 'package)
 
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+     (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			      ("org" . "https://orgmode.org/elpa/")
+			      ("elpa" . "https://elpa.gnu.org/packages/")))
 
-(package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+     (package-initialize)
+     (unless package-archive-contents
+       (package-refresh-contents))
 
-;; Initialize use-package on non-Linux platforms
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
+     ;; Initialize use-package on non-Linux platforms
+     (unless (package-installed-p 'use-package)
+       (package-install 'use-package))
 
-(require 'use-package)
-(setq use-package-always-ensure t)
+     (require 'use-package)
+     (setq use-package-always-ensure t)
 
-(use-package auto-package-update
-   :ensure t
-   :config
-   (setq auto-package-update-delete-old-versions t
-	 auto-package-update-interval 4)
-   (auto-package-update-maybe))
+     (use-package auto-package-update
+	:ensure t
+	:config
+	(setq auto-package-update-delete-old-versions t
+	      auto-package-update-interval 4)
+	(auto-package-update-maybe))
 
 (defvar *full-name* "Tom Hartman")
 (defvar *email* "thomas.lees.hartman@gmail.com")
@@ -141,13 +141,13 @@
   (setq org-log-done 'time)
   (setq org-log-into-drawer t))
 
-(setf org-src-preserve-indentation t)
+   (setf org-src-preserve-indentation t)
 
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
+ (require 'org-tempo)
+  
+ (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+ (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+ (add-to-list 'org-structure-template-alist '("py" . "src python"))
 
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
@@ -174,6 +174,7 @@
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
 (setf org-agenda-files '("~/notes/journal"))
+(global-set-key (kbd "C-c a") 'org-agenda)
 
 (defun org-export-as-pdf-and-open ()
   (interactive)
@@ -373,18 +374,3 @@
 (use-package restclient)
 
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   '("/home/thartman/notes/journal/2021-09-22.org" "/home/thartman/notes/journal/2021-09-23.org" "/home/thartman/notes/journal/2021-09-24.org" "/home/thartman/notes/journal/2021-09-28.org" "/home/thartman/notes/journal/2021-09-29.org" "/home/thartman/notes/journal/2021-09-30.org" "/home/thartman/notes/journal/2021-10-06.org") nil nil "Customized with use-package org-roam")
- '(package-selected-packages
-   '(all-the-icons-dired yasnippet which-key visual-fill-column use-package undercover typescript-mode slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami org-roam org-plus-contrib org-dashboard org-bullets noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes dockerfile-mode docker-compose-mode diminish deft dashboard dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
