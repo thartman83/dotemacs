@@ -200,7 +200,7 @@
   :custom
   (org-roam-directory "~/notes")
   (org-agenda-files '("~/notes/journal"
-		      "~/notes/globals/recurring.org"))
+		      "~/notes/globals/"))
   (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
@@ -224,7 +224,6 @@
   ("C-c n d" . org-roam-dailies-map)
   :config
   (require 'org-roam-dailies)
-  (org-roam-setup)
   (org-roam-db-autosync-mode))
 
 (use-package org-contacts
@@ -412,5 +411,22 @@
   (mapc #'yas-load-directory yas/root-directory))
 
 (use-package restclient)
+
+(use-package git-auto-commit-mode)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values
+   '((gac-automatically-push-p . t)
+     (gac-automatically-add-new-files-p . t))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 ;;; init.el ends here
