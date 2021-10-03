@@ -124,6 +124,8 @@
   :config
   (setq which-key-idle-delay 1))
 
+(add-hook 'org-mode-hook 'turn-on-flyspell)
+
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
@@ -411,8 +413,6 @@
   (mapc #'yas-load-directory yas/root-directory))
 
 (use-package restclient)
-
-(use-package git-auto-commit-mode)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

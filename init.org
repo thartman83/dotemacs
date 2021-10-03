@@ -230,7 +230,9 @@ Initialize multiple cursors mode
 
 * Spell Checking
 Use fly-spell to spell check certain types of buffers
-
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'turn-on-flyspell)
+#+end_src
 * Org Mode
 ** General
 General setup for org mode files, some of this is to enhance
