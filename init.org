@@ -348,6 +348,17 @@ Setup some conviencing functions and bindings for resume org files.
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
 #+end_src
 
+** LaTeX Pdf Process
+Need to add the -shell-escape option to the pdflatex process in order for svg files to be processed by inkscape
+
+#+begin_src emacs-lisp
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	"bibtex %b"
+	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+end_src
+
 ** org-roam
 Setup org-roam note taking and file management. After loading the package, you can check the variable `org-roam--sqlite-available-p' to verify that the sqlite database is available.
 
@@ -667,10 +678,13 @@ Initialize open scad mode
 
 Setup Lua the way I like it
 #+begin_src emacs-lisp
+
 (use-package lua-mode
   :hook (lua-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp))
+  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp)
+  (setf lsp-clients-lua-lsp-server-install-dir "~/.luarocks/bin/lua-lsp"))
+
 #+end_src
 
 **** Lua Language Server
@@ -728,6 +742,13 @@ Origami folding library
 ** Docker Compose 
 #+begin_src emacs-lisp
 (use-package docker-compose-mode)
+#+end_src
+
+** Docker Management
+#+begin_src emacs-lisp
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
 #+end_src
 
 * Treemacs
@@ -823,4 +844,3 @@ Customizations to emacs. Emacs adds these based on some user interaction so they
 #+begin_src emacs-lisp
 ;;; init.el ends here
 #+end_src
-

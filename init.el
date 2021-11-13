@@ -195,6 +195,12 @@
    (define-key org-mode-map 
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
 
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	"bibtex %b"
+	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+	"pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
 (use-package org-roam
   :ensure t
   :init
@@ -388,7 +394,8 @@
 (use-package lua-mode
   :hook (lua-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp))
+  (add-to-list 'lsp-enabled-clients 'lsp-lua-lsp)
+  (setf lsp-clients-lua-lsp-server-install-dir "~/.luarocks/bin/lua-lsp"))
 
 (use-package emmet-mode
   :hook (mhtml-mode . emmet-mode))
@@ -404,6 +411,10 @@
 (use-package dockerfile-mode)
 
 (use-package docker-compose-mode)
+
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
 
 (use-package yasnippet
   :custom
