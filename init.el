@@ -410,11 +410,16 @@
 
 (use-package dockerfile-mode)
 
-(use-package docker-compose-mode)
+(use-package docker-compose-mode
+  :bind ("C-c D" . docker-compose))
 
 (use-package docker
   :ensure t
   :bind ("C-c d" . docker))
+
+(use-package smartparens
+  :config
+  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode))
 
 (use-package yasnippet
   :custom

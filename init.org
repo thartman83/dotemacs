@@ -741,7 +741,8 @@ Origami folding library
 
 ** Docker Compose 
 #+begin_src emacs-lisp
-(use-package docker-compose-mode)
+(use-package docker-compose-mode
+  :bind ("C-c D" . docker-compose))
 #+end_src
 
 ** Docker Management
@@ -751,6 +752,12 @@ Origami folding library
   :bind ("C-c d" . docker))
 #+end_src
 
+* Smartparens
+#+begin_src emacs-lisp
+(use-package smartparens
+  :config
+  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode))
+#+end_src
 * Treemacs
 Default setup for treemacs
 Disabling for the moment
