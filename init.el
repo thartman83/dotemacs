@@ -92,8 +92,10 @@
 
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
+;;(use-package doom-themes
+;;  :init (load-theme 'doom-sourcerer t))
 (use-package doom-themes
-  :init (load-theme 'doom-sourcerer t))
+  :init (load-theme 'doom-acario-dark t))
 
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
