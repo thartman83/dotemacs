@@ -82,7 +82,6 @@ This configuration uses the GPL v2 license.
                 treemacs-mode-hook
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
 #+end_src
 
 ** Frist Buffer
@@ -150,7 +149,7 @@ Setup the use-package package as well for ease of package management and configu
 
 #+end_src
 
-* Apperance
+* Appearance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
 
 ** Font
@@ -202,6 +201,20 @@ To enable for all text modes add a hook for text-mode.
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 #+end_src
 
+** Mode Line
+Updating the mode line for more awesome. Currently playing around with telephone line.
+
+#+begin_src emacs-lisp
+(use-package telephone-line
+  :custom
+  (telephone-line-primary-left-separator 'telephone-line-cubed-left)
+  (telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left)
+  (telephone-line-primary-right-separator 'telephone-line-cubed-right)
+  (telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+  (telephone-line-height 16)
+  (telephone-line-mode 1))
+#+end_src
+
 ** Highlight Parenthesis
 #+begin_src emacs-lisp
 (use-package paren
@@ -209,6 +222,7 @@ To enable for all text modes add a hook for text-mode.
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
 #+end_src
+
 * UI Improvements
 ** Multiple Cursors
 Initialize multiple cursors mode
@@ -228,11 +242,22 @@ Initialize multiple cursors mode
   (setq which-key-idle-delay 1))
 #+end_src
 
+* Dired
+Found this dired configuration changes over on the [[explog.in/dot/emacs/config.html][A literate emacs configuration]]. It removes permissions and other details from the dired view which makes the buffer look a lot less noisy.
+
+#+begin_src emacs-lisp
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    (dired-hide-details-mode 1)
+	    (display-line-numbers-mode 0)))
+#+end_src
+
 * Spell Checking
 Use fly-spell to spell check certain types of buffers
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook 'turn-on-flyspell)
 #+end_src
+
 * Org Mode
 ** General
 General setup for org mode files, some of this is to enhance
@@ -264,14 +289,19 @@ Additionally I prefer my org files to starup collapse for easier navigation.
 #+end_src
 
 ** Babel
- 
-  #+begin_src emacs-lisp
+Setup babel source code blocks. Right now this is configured for shell and emacs-lisp.
+
+The final line prevents org src code from altering the windowing within emacs. I borrows and existing window rather than doing a 50/50 split between the org target buffer and the source, which is super annoying.
+
+#+begin_src emacs-lisp
 (setf org-src-preserve-indentation t)
 
 (org-babel-do-load-languages 'org-babel-load-languages
 			     '((shell .t)
 			       (emacs-lisp . t)))
-   #+end_src
+
+(setf org-src-window-setup 'other-window)
+#+end_src
 
 ** Structure Templates
 
@@ -328,9 +358,13 @@ org-bullets replaces the heading stars in org-mode buffers with nicer looking ch
 
 ** Org Agenda
 
+Setup some default bindings as well as the location of agenda files. The final line is a configuration change similar to the one made for org-babel. By default opening an agenda buffer reorganizes the windows and frames so that only the current buffer and the new agenda buffer are presented in a 50/50 window split. This is super annoying.
+
 #+begin_src emacs-lisp
 (setf org-agenda-files '("~/notes/journal"))
 (global-set-key (kbd "C-c a") 'org-agenda)
+
+(setf org-agenda-window-setup 'other-window)
 #+end_src
 
 ** Resume
@@ -753,10 +787,13 @@ Origami folding library
 #+end_src
 
 * Smartparens
+Turn on smart parens mode for all programming modes. Exclude single quote parings for lisp modes because single quotes have different meaning in those languages.
+
 #+begin_src emacs-lisp
 (use-package smartparens
   :config
-  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode))
+  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode)
+  (sp-local-pair '(emacs-lisp-mode lisp-mode) "'" "'" :actions nil))
 #+end_src
 * Treemacs
 Default setup for treemacs
@@ -827,8 +864,9 @@ Disabling for the moment
 #+begin_src emacs-lisp
 (use-package restclient)
 #+end_src
-* Customizations
-Customizations to emacs. Emacs adds these based on some user interaction so they need to be added into the org file so they persist after another tangle.
+
+* Customization
+Customization's to emacs. Emacs adds these based on some user interaction so they need to be added into the org file so they persist after another tangle.
 
 #+begin_src emacs-lisp
 (custom-set-variables
@@ -846,6 +884,7 @@ Customizations to emacs. Emacs adds these based on some user interaction so they
  ;; If there is more than one, they won't work right.
  )
 #+end_src
+
 * Closing
 
 #+begin_src emacs-lisp

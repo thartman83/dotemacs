@@ -110,6 +110,15 @@
   :config
   (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
+(use-package telephone-line
+  :custom
+  (telephone-line-primary-left-separator 'telephone-line-cubed-left)
+  (telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left)
+  (telephone-line-primary-right-separator 'telephone-line-cubed-right)
+  (telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+  (telephone-line-height 16)
+  (telephone-line-mode 1))
+
 (use-package paren
   :config
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
@@ -123,6 +132,11 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    (dired-hide-details-mode 1)
+	    (display-line-numbers-mode 0)))
 
 (add-hook 'org-mode-hook 'turn-on-flyspell)
 
@@ -150,6 +164,8 @@
 (org-babel-do-load-languages 'org-babel-load-languages
 			     '((shell .t)
 			       (emacs-lisp . t)))
+
+(setf org-src-window-setup 'other-window)
 
  (require 'org-tempo)
   
@@ -183,6 +199,8 @@
 
 (setf org-agenda-files '("~/notes/journal"))
 (global-set-key (kbd "C-c a") 'org-agenda)
+
+(setf org-agenda-window-setup 'other-window)
 
 (defun org-export-as-pdf-and-open ()
   (interactive)
@@ -419,7 +437,8 @@
 
 (use-package smartparens
   :config
-  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode))
+  (add-hook 'prog-mode-hook 'turn-on-smartparens-mode)
+  (sp-local-pair '(emacs-lisp-mode lisp-mode) "'" "'" :actions nil))
 
 (use-package yasnippet
   :custom
