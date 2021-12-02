@@ -55,9 +55,11 @@
      ;; Initialize package sources
      (require 'package)
 
-     (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			      ("org" . "https://orgmode.org/elpa/")
-			      ("elpa" . "https://elpa.gnu.org/packages/")))
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+			 ("elpa" . "https://elpa.gnu.org/packages/")
+;;			 ("org" . "https://orgmode.org/elpa/")
+			 ))
 
      (package-initialize)
      (unless package-archive-contents
@@ -148,9 +150,9 @@
   (visual-line-mode 1))
 
 (use-package org
-  :pin org
+;;  :pin org
   :hook (org-mode . efs/org-mode-setup)
-  :ensure org-plus-contrib
+  :ensure org-contrib
   :bind (("C-c a" . org-agenda))
   :config
   (auto-fill-mode)
@@ -456,6 +458,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(org-roam org-bullets org-contrib yasnippet which-key visual-fill-column use-package undercover typescript-mode telephone-line smartparens slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck git-auto-commit-mode ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes dockerfile-mode docker-compose-mode docker diminish deft dashboard dash-functional dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
