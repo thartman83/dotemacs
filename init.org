@@ -648,6 +648,14 @@ Setup Typescript to use lsp
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 #+end_src
 
+*** JSON
+Setup json lsp
+#+begin_src emacs-lisp
+(use-package json-mode
+  :hook (json-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-enabled-clients 'json-ls))
+#+end_src
 *** Python
 
 Setup lsp for python
@@ -667,9 +675,11 @@ Setup lsp for python
 
 **** pyenv
 #+begin_src emacs-lisp
-(use-package pyvenv)
-(pyvenv-activate "~/venv/")
-
+(use-package pyvenv
+  :demand t
+  :config
+  (setq pyvenv-workon "emacs")  ; Default venv
+  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
 #+end_src
 **** Jedi Language Server
 

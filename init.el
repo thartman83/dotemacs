@@ -376,6 +376,11 @@
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 
+(use-package json-mode
+  :hook (json-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-enabled-clients 'json-ls))
+
 (use-package python-mode
   :ensure t
   :hook (python-mode . lsp-deferred)
@@ -388,8 +393,11 @@
 ;;  (require 'dap-python)
   )
 
-(use-package pyvenv)
-(pyvenv-activate "~/venv/")
+(use-package pyvenv
+  :demand t
+  :config
+  (setq pyvenv-workon "emacs")  ; Default venv
+  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
 
 (use-package jedi)
 
@@ -458,8 +466,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(org-roam org-bullets org-contrib yasnippet which-key visual-fill-column use-package undercover typescript-mode telephone-line smartparens slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck git-auto-commit-mode ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed doom-themes dockerfile-mode docker-compose-mode docker diminish deft dashboard dash-functional dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
