@@ -648,13 +648,24 @@ Setup Typescript to use lsp
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 #+end_src
 
+*** Javascript
+#+begin_src emacs-lisp
+(use-package javascript-mode
+  :mode "\\.js\\"
+  :hook (javascript-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+#+end_src
+
 *** JSON
 Setup json lsp
 #+begin_src emacs-lisp
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-enabled-clients 'json-ls))
+  (add-to-list 'lsp-enabled-clients 'json-ls)
+  (setq tab-width 2))
 #+end_src
 *** Python
 

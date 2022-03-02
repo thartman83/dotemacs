@@ -22,3 +22,14 @@ site=lisp/*~
 /custom.el
 /abbrev_defs
 /org-roam.db
+/.lsp-session-v1
+/projectile-bookmarks.eld
+/.org-id-locations
+/.cache/
+/.dap-breakpoints
+/.extension/
+/.last-package-update-day
+/forge-database.sqlite
+/tramp
+/url/
+/init-test.el
