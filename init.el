@@ -239,7 +239,11 @@
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)
      ("h" "house project" plain
-      (file "~/org/templates/house-project.org")
+      (file "~/.emacs.d/org-templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("r" "recipe" plain
+      (file "~/.emacs.d/org-templates/recipe.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
   :bind  (("C-c n l" . org-roam-buffer-toggle)
@@ -376,10 +380,18 @@
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 
+(use-package javascript-mode
+  :mode "\\.js\\"
+  :hook (javascript-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-enabled-clients 'json-ls))
+  (add-to-list 'lsp-enabled-clients 'json-ls)
+  (setq tab-width 2))
 
 (use-package python-mode
   :ensure t
@@ -466,8 +478,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(javascript-mode yasnippet which-key visual-fill-column use-package undercover typescript-mode telephone-line smartparens slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami org-roam org-contrib org-bullets noflet multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck git-auto-commit-mode ggtags folding fold-dwim ess ert-runner ert-async emmet-mode elfeed eldoc doom-themes dockerfile-mode docker-compose-mode docker diminish deft dashboard dash-functional dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

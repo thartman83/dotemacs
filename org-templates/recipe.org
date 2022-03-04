@@ -1,0 +1,13 @@
+#+filetags: recipe
+
+* Recipe
+
+** Ingredients
+
+** Steps
+
+* Notes
+
+* Modifications
+
+* Attempts

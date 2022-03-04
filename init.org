@@ -417,7 +417,11 @@ Setup org-roam note taking and file management. After loading the package, you c
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)
      ("h" "house project" plain
-      (file "~/org/templates/house-project.org")
+      (file "~/.emacs.d/org-templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("r" "recipe" plain
+      (file "~/.emacs.d/org-templates/recipe.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
   :bind  (("C-c n l" . org-roam-buffer-toggle)

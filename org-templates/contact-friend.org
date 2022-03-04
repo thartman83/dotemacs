@@ -1,0 +1,8 @@
+"* %(org-contacts-template-name)
+:PROPERTIES:
+:ADDRESS: %^{1234 Some Ave, City State, 99999}
+:BIRTHDAY: %^{yyyy-mm-dd}
+:EMAIL: %(org-contacts-template-email)
+:CELLPHONE: %^{(555)-555-5555}
+:NOTE: %^{NOTE}
+:END:

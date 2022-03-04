@@ -1,0 +1,11 @@
+#+filetags: home project
+#+TODO: TODO(t) | DONE(d)
+#+TODO: ESTIMATES(e) WORKORDERED(w) INVOICED(c) | COMPLETED(d)
+
+* TODO Project Status
+
+* Estimates
+
+* Work
+
+
