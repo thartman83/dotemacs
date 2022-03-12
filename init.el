@@ -137,6 +137,25 @@
   :config
   (setq which-key-idle-delay 1))
 
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+
+(use-package ws-butler
+  :hook ((text-mode . ws-butler-mode)
+         (prog-mode . ws-butler-mode)))
+
+(global-auto-revert-mode 1)
+
+;; no littering package handles a lot of emacs temp file mainenance in a nice way
+(use-package no-littering)
+
+;; keep customizations out of the init file
+;;(setq custom-file
+;;      (if (boundp 'server-socket-dir)
+;;          (expand-file-name "custom.el" server-socket-dir)
+;;        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+;;(load custom-file t)
+
 (add-hook 'dired-mode-hook
 	  (lambda ()
 	    (dired-hide-details-mode 1)
@@ -380,9 +399,9 @@
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 
-(use-package javascript-mode
-  :mode "\\.js\\"
-  :hook (javascript-mode . lsp-deferred)
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :hook (js2-mode . lsp-deferred)
   :config
   (setq tab-width 2)
   (add-to-list 'lsp-enabled-clients 'jsts-ls))

@@ -33,3 +33,5 @@ site=lisp/*~
 /tramp
 /url/
 /init-test.el
+/var/
+/async-bytecomp.log
