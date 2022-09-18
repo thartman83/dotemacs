@@ -92,6 +92,8 @@
                                                        (length end)) ? )
                            end)) lines "\n")))
 
+;;(use-package dash)
+
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 ;;(use-package doom-themes
@@ -102,10 +104,18 @@
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
   (interactive "nTransparency Value 0 - 100: ")
-
   (set-frame-parameter (selected-frame) 'alpha value))
-   
-(set-transparency 90)
+
+;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
+(defun new-frame-setup (frame)
+  (when (display-graphic-p frame)
+      (set-transparency 90)))
+
+;; Run for already-existing frames
+(mapc 'new-frame-setup (frame-list))
+
+;; Run when a new frame is created
+(add-hook 'before-make-frame-functions 'new-frame-setup)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -431,6 +441,15 @@
   :hook (mhtml-mode . emmet-mode))
 
 (use-package yaml-mode)
+
+;;(lsp-install-server 'css-ls)
+
+(use-package scss-mode
+  :mode "\\.scss'"
+  :hook (scss-mode . lsp-deferred)
+  :config
+  (setq scss-indent-level 2)
+  (add-to-list 'lsp-enabled-clients 'css-ls))
 
 (use-package origami
   :config
