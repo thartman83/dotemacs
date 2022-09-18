@@ -154,6 +154,7 @@
   :hook ((text-mode . ws-butler-mode)
          (prog-mode . ws-butler-mode)))
 
+(setq global-auto-revert-non-file-buffers t)
 (global-auto-revert-mode 1)
 
 ;; no littering package handles a lot of emacs temp file mainenance in a nice way
@@ -182,7 +183,11 @@
 ;;  :pin org
   :hook (org-mode . efs/org-mode-setup)
   :ensure org-contrib
-  :bind (("C-c a" . org-agenda))
+  :bind ()
+  :custom
+  ;; Right justifies tags on headers adjusting for a default line width of 80
+  (org-tags-column -80)
+  (org-agenda-tags-column -80)
   :config
   (auto-fill-mode)
   (setq org-startup-folded "fold")
@@ -190,7 +195,14 @@
   (setq org-return-follows-link t)
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
-  (setq org-log-into-drawer t))
+  (setq org-log-into-drawer t)
+  ;; Prevent org-agenda from creating or clobbering frames
+  (setf org-agenda-window-setup 'other-window)
+
+  ;; Refile targets
+  (setq org-refile-targets
+        '(("~/notes/globals/punchlist.org" :maxlevel . 1)))
+  )
 
 (setf org-src-preserve-indentation t)
 
@@ -230,10 +242,19 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
-(setf org-agenda-files '("~/notes/journal"))
 (global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 
 (setf org-agenda-window-setup 'other-window)
+
+(setq org-agenda-custom-commands
+      '(("d" "Default view of scheduled items and todos"
+         ((agenda "")
+          (tags-todo "Punchlist"
+                     ((org-agenda-overriding-header "Punchlist")))
+          (tags-todo "*"
+                     ((org-agenda-overriding-header "All of the things")))
+          ))))
 
 (defun org-export-as-pdf-and-open ()
   (interactive)
@@ -293,6 +314,25 @@
   :ensure nil
   :after org
   :custom (org-contacts-files '("~/org/contacts.org")))
+
+(use-package org-capture
+  :ensure nil
+  :after org
+  :custom
+  (org-capture-templates
+   `(("p" "Punchlist Item" entry
+      (file+headline "~/notes/globals/punchlist.org" "Punch list"),
+      "* TODO %? %^G\n %i")
+     ("e" "Event" entry
+      (file+headline "~/notes/globals/calendar.org" "Events"),
+      "* %? %^G\nSCHEDULED: %^t\n %i")
+     ("w" "Whereabouts" entry
+      (file+headline "~/notes/globals/calendar.org" "Whereabouts")
+      "* %? \n SCHEDULED: %^t\n %i")
+     ("a" "Appointment" entry
+      (file+headline "~/notes/globals/calendar.org" "Appointments")
+      "* %? %^G\n SCHEDULED: %^t\n %i")
+     )))
 
 (use-package ivy
   :diminish
@@ -516,8 +556,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(yasnippet ws-butler which-key visual-fill-column use-package undercover typescript-mode telephone-line smartparens slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami org-roam org-contrib org-bullets noflet no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode js2-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck git-auto-commit-mode ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed eldoc doom-themes dockerfile-mode docker-compose-mode docker diminish deft dashboard dash-functional dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
