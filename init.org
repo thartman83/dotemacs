@@ -151,6 +151,14 @@ Setup the use-package package as well for ease of package management and configu
 
 #+end_src
 
+** Dash
+
+For whatever reason a number of packages require dash but don't actually pull it down
+
+#+begin_src emacs-lisp
+;;(use-package dash)
+#+end_src
+
 * Appearance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
 
@@ -182,10 +190,18 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
   (interactive "nTransparency Value 0 - 100: ")
-
   (set-frame-parameter (selected-frame) 'alpha value))
-   
-(set-transparency 90)
+
+;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
+(defun new-frame-setup (frame)
+  (when (display-graphic-p frame)
+      (set-transparency 90)))
+
+;; Run for already-existing frames
+(mapc 'new-frame-setup (frame-list))
+
+;; Run when a new frame is created
+(add-hook 'before-make-frame-functions 'new-frame-setup)
 #+end_src
 
 ** Mixed Pitch
@@ -220,6 +236,7 @@ Updating the mode line for more awesome. Currently playing around with telephone
 #+end_src
 
 ** Highlight Parenthesis
+
 #+begin_src emacs-lisp
 (use-package paren
   :config
@@ -410,8 +427,8 @@ org-bullets replaces the heading stars in org-mode buffers with nicer looking ch
 Setup some default bindings as well as the location of agenda files. The final line is a configuration change similar to the one made for org-babel. By default opening an agenda buffer reorganizes the windows and frames so that only the current buffer and the new agenda buffer are presented in a 50/50 window split. This is super annoying.
 
 #+begin_src emacs-lisp
-(setf org-agenda-files '("~/notes/journal"))
 (global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
 
 (setf org-agenda-window-setup 'other-window)
 #+end_src
@@ -496,15 +513,19 @@ Use org-contacts to create and manage contacts in org mode.
 
 ** org-capture
 Customizations to org mode capture templates
-#+begin_src 
+#+begin_src emacs-lisp
 (use-package org-capture
   :ensure nil
   :after org
   :custom
   (org-capture-templates
-   `(("f" "Friend" entry (file+headline "~/org/contacts.org" "Friends"),
-      (file "~/org/templates/contact-friend.org")
-      :empty-lines 1))))
+   `(("p" "Punchlist Item" entry
+      (file+headline "~/notes/globals/punchlist.org" "Punch list"),
+      "* TODO %? %^G\n %i")
+     ("e" "Event" entry
+      (file+headline "~/notes/globals/calendar.org" "Events"),
+      "* %? %^G\nSCHEDULED: %^t\n %i")
+     )))
 #+end_src
 
 * Ivy and Counsel
@@ -828,6 +849,17 @@ Setup yaml support
 (use-package yaml-mode)
 #+end_src
 
+*** SCSS
+#+begin_src emacs-lisp
+;;(lsp-install-server 'css-ls)
+
+(use-package scss-mode
+  :mode "\\.scss'"
+  :hook (scss-mode . lsp-deferred)
+  :config
+  (setq scss-indent-level 2)
+  (add-to-list 'lsp-enabled-clients 'css-ls))
+#+end_src
 ** Origami
 Origami folding library
 #+begin_src emacs-lisp
