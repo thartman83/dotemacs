@@ -147,6 +147,25 @@
   :config
   (setq which-key-idle-delay 1))
 
+(setq-default tab-width 2)
+(setq-default indent-tabs-mode nil)
+
+(use-package ws-butler
+  :hook ((text-mode . ws-butler-mode)
+         (prog-mode . ws-butler-mode)))
+
+(global-auto-revert-mode 1)
+
+;; no littering package handles a lot of emacs temp file mainenance in a nice way
+(use-package no-littering)
+
+;; keep customizations out of the init file
+;;(setq custom-file
+;;      (if (boundp 'server-socket-dir)
+;;          (expand-file-name "custom.el" server-socket-dir)
+;;        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+;;(load custom-file t)
+
 (add-hook 'dired-mode-hook
 	  (lambda ()
 	    (dired-hide-details-mode 1)
@@ -249,7 +268,11 @@
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)
      ("h" "house project" plain
-      (file "~/org/templates/house-project.org")
+      (file "~/.emacs.d/org-templates/house-project.org")
+      :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
+      :unnarrowed t)
+     ("r" "recipe" plain
+      (file "~/.emacs.d/org-templates/recipe.org")
       :if-new (file+head "%<%Y%m%d%H%M%S$>-${slug}.org" "#+title: ${title}\n")
       :unnarrowed t)))
   :bind  (("C-c n l" . org-roam-buffer-toggle)
@@ -386,10 +409,18 @@
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
 
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :hook (js2-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-enabled-clients 'json-ls))
+  (add-to-list 'lsp-enabled-clients 'json-ls)
+  (setq tab-width 2))
 
 (use-package python-mode
   :ensure t
