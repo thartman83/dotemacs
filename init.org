@@ -160,7 +160,7 @@ Setup SauceCodePro from Nerd Font as the default font for buffers.
 #+begin_src emacs-lisp
   
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
- 
+
 #+end_src
 
 ** Theme
@@ -271,6 +271,7 @@ Use the ws-butler package to clear buffers of unnecessary white spaces
 Make sure that emacs always reverts buffers after they have been changed on disk. This is helpful when doing things like switching between branches in git.
 
 #+begin_src emacs-lisp
+(setq global-auto-revert-non-file-buffers t)
 (global-auto-revert-mode 1)
 #+end_src
 

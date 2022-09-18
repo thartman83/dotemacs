@@ -497,6 +497,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(yasnippet ws-butler which-key visual-fill-column use-package undercover typescript-mode telephone-line smartparens slime skeletor scad-preview restclient pyvenv python-mode paredit page-break-lines overseer origami org-roam org-contrib org-bullets noflet no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi ledger-mode julia-mode js2-mode jedi ivy-rich irony helm-gtags helm-google helm-flycheck git-auto-commit-mode ggtags forge folding fold-dwim ess ert-runner ert-async emmet-mode elfeed eldoc doom-themes dockerfile-mode docker-compose-mode docker diminish deft dashboard dash-functional dap-mode cyberpunk-theme counsel-projectile company-box bbdb auto-package-update auto-complete-c-headers all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
