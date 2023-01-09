@@ -2,7 +2,7 @@
 #+AUTHOR: Tom Hartman
 #+STARTUP: overview
 #+PROPERTY: header-args:emacs-lisp :tangle ./init-test.el
- 
+
 * General Setup
 ** Preamble
 This section contains the license and commentary for this elisp file. This both makes my elisp linter happy and also makes me happy. Or at least makes me feel like a responsible programmer.
@@ -39,7 +39,7 @@ This configuration uses the GPL v2 license.
 ;; System Crafters Emacs from Scratch: https://github.com/daviwil/emacs-from-scratch
 ;;
 
-;; 
+;;
 #+end_src
 
 
@@ -125,7 +125,7 @@ Setup the use-package package as well for ease of package management and configu
 	(setq auto-package-update-delete-old-versions t
 	      auto-package-update-interval 4)
 	(auto-package-update-maybe))
-   
+
    #+end_src
 
 ** Constants
@@ -166,7 +166,7 @@ This section configures the overall apparance of emacs from fonts to themes, tra
 Setup SauceCodePro from Nerd Font as the default font for buffers.
 
 #+begin_src emacs-lisp
-  
+
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 #+end_src
@@ -385,13 +385,13 @@ The final line prevents org src code from altering the windowing within emacs. I
  #+begin_src emacs-lisp
 
  (require 'org-tempo)
-  
+
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
  (add-to-list 'org-structure-template-alist '("py" . "src python"))
 
  #+end_src
- 
+
 ** Auto-tangle
 
 This snippet adds a hook to org-mode buffers so that efs/org-babel-tangle-config gets executed each time such a buffer gets saved. This function checks to see if the file being saved is the Emacs.org file you’re looking at right now, and if so, automatically exports the configuration here to the associated output files.
@@ -461,10 +461,10 @@ Setup some conviencing functions and bindings for resume org files.
   (save-buffer)
   (org-open-file (org-latex-export-to-pdf)))
 
-(add-hook 
+(add-hook
  'org-mode-hook
  (lambda()
-   (define-key org-mode-map 
+   (define-key org-mode-map
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
 #+end_src
 
@@ -508,7 +508,7 @@ Setup org-roam note taking and file management. After loading the package, you c
       :unnarrowed t)))
   :bind  (("C-c n l" . org-roam-buffer-toggle)
 	  ("C-c n f" . org-roam-node-find)
-	  ("C-c n i" . org-roam-node-insert)	  
+	  ("C-c n i" . org-roam-node-insert)
 	  :map org-mode-map
 	  ("C-M-i"   . completion-at-point)
 	  :map org-roam-dailies-map
@@ -519,6 +519,12 @@ Setup org-roam note taking and file management. After loading the package, you c
   :config
   (require 'org-roam-dailies)
   (org-roam-db-autosync-mode))
+#+end_src
+
+In order to keep my laptop and desktop in sync with one another in terms of roam notes all saves in a notes file will trigger an automatic git commit. Load the git-auto-commit-mode package to facilitate this.
+
+#+begin_src emacs-lisp
+(use-package git-auto-commit-mode)
 #+end_src
 
 ** org-contacts
@@ -645,7 +651,7 @@ LSP-treemacs
 #+end_src
 
 ** DAP
-#+begin_src 
+#+begin_src
 (use-package dap-mode
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
   ;; :custom
@@ -665,7 +671,7 @@ LSP-treemacs
     "d" '(dap-hydra t :wk "debugger")))
 #+end_src
 
-** Company 
+** Company
 
 Company Mode provides a nicer in-buffer completion interface than completion-at-point which is more reminiscent of what you would expect from an IDE. We add a simple configuration to make the keybindings a little more useful (TAB now completes the selection and initiates completion at the current location if needed).
 
@@ -716,7 +722,7 @@ Paredit mode
 #+begin_src emacs-lisp
 (use-package paredit
   :config
-  
+
   ;; slurping in a terminal doesn't quite work, so rebind keys so they do
   (unless (display-graphic-p)
     (define-key paredit-mode-map (kbd ",") 'paredit-backward-slurp-sexp)
@@ -765,40 +771,26 @@ Setup json lsp
 #+end_src
 *** Python
 
-Setup lsp for python
-#+begin_src emacs-lisp
-(use-package python-mode
-  :ensure t
-  :hook (python-mode . lsp-deferred)
- ;; :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-;;  (dap-python-debugger 'debugpy)
-;;  :config
-;;  (require 'dap-python)
-  )
-#+end_src
+In order to not clutter the system python userspace, packages for application development are stored in virtual environments as part of the application itself. This includes both application, testing, and development dependencies. In order to properly interact with python within emacs Pyvenv can be used to set the current python environment which will be passed to any subsequent python relates commands (lsp, REPL, etc)
 
-**** pyenv
 #+begin_src emacs-lisp
 (use-package pyvenv
-  :demand t
   :config
-  (setq pyvenv-workon "emacs")  ; Default venv
-  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
+  (pyvenv-mode 1))
 #+end_src
-**** Jedi Language Server
+
+As stated above the lsp server is installed in the virtual environments on a per project basis. If the environment has not been enabled in the current emacs session, query the user for the python environment before starting lsp.
 
 #+begin_src emacs-lisp
-(use-package jedi)
+(defun tlh/enable-lsp-on-pyvenv ()
+  "Enable lsp mode after pyvenv activation"
+  (when (null (getenv "VIRTUAL_ENV"))
+    (call-interactively 'pyvenv-activate))
+  (lsp-deferred))
 
-(use-package lsp-jedi
-  :ensure t
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . tlh/enable-lsp-on-pyvenv))
 #+end_src
 
 *** Open Scad
@@ -829,7 +821,7 @@ Initialize open scad mode
   (slime-setup '(slime-repl slime-fuzzy)))
 #+end_src
 
-*** Lua 
+*** Lua
 
 Setup Lua the way I like it
 #+begin_src emacs-lisp
@@ -899,13 +891,13 @@ Origami folding library
 (use-package yaml-mode)
 #+end_src
 
-* Docker 
+* Docker
 ** Docker File Mode
 #+begin_src emacs-lisp
 (use-package dockerfile-mode)
 #+end_src
 
-** Docker Compose 
+** Docker Compose
 #+begin_src emacs-lisp
 (use-package docker-compose-mode
   :bind ("C-c D" . docker-compose))

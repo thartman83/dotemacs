@@ -213,7 +213,7 @@
 (setf org-src-window-setup 'other-window)
 
  (require 'org-tempo)
-  
+
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
  (add-to-list 'org-structure-template-alist '("py" . "src python"))
@@ -261,10 +261,10 @@
   (save-buffer)
   (org-open-file (org-latex-export-to-pdf)))
 
-(add-hook 
+(add-hook
  'org-mode-hook
  (lambda()
-   (define-key org-mode-map 
+   (define-key org-mode-map
        (kbd "<f5>") 'org-export-as-pdf-and-open)))
 
 (setq org-latex-pdf-process
@@ -298,7 +298,7 @@
       :unnarrowed t)))
   :bind  (("C-c n l" . org-roam-buffer-toggle)
 	  ("C-c n f" . org-roam-node-find)
-	  ("C-c n i" . org-roam-node-insert)	  
+	  ("C-c n i" . org-roam-node-insert)
 	  :map org-mode-map
 	  ("C-M-i"   . completion-at-point)
 	  :map org-roam-dailies-map
@@ -309,6 +309,8 @@
   :config
   (require 'org-roam-dailies)
   (org-roam-db-autosync-mode))
+
+(use-package git-auto-commit-mode)
 
 (use-package org-contacts
   :ensure nil
@@ -427,7 +429,7 @@
 
 (use-package paredit
   :config
-  
+
   ;; slurping in a terminal doesn't quite work, so rebind keys so they do
   (unless (display-graphic-p)
     (define-key paredit-mode-map (kbd ",") 'paredit-backward-slurp-sexp)
@@ -462,32 +464,19 @@
   (add-to-list 'lsp-enabled-clients 'json-ls)
   (setq tab-width 2))
 
-(use-package python-mode
-  :ensure t
-  :hook (python-mode . lsp-deferred)
- ;; :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-;;  (dap-python-debugger 'debugpy)
-;;  :config
-;;  (require 'dap-python)
-  )
-
 (use-package pyvenv
-  :demand t
   :config
-  (setq pyvenv-workon "emacs")  ; Default venv
-  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
+  (pyvenv-mode 1))
 
-(use-package jedi)
+(defun tlh/enable-lsp-on-pyvenv ()
+  "Enable lsp mode after pyvenv activation"
+  (when (null (getenv "VIRTUAL_ENV"))
+    (call-interactively 'pyvenv-activate))
+  (lsp-deferred))
 
-(use-package lsp-jedi
-  :ensure t
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . tlh/enable-lsp-on-pyvenv))
 
 (use-package scad-mode)
 (use-package scad-preview
