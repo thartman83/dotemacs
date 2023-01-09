@@ -521,6 +521,12 @@ Setup org-roam note taking and file management. After loading the package, you c
   (org-roam-db-autosync-mode))
 #+end_src
 
+In order to keep my laptop and desktop in sync with one another in terms of roam notes all saves in a notes file will trigger an automatic git commit. Load the git-auto-commit-mode package to facilitate this.
+
+#+begin_src emacs-lisp
+(use-package git-auto-commit-mode)
+#+end_src
+
 ** org-contacts
 Use org-contacts to create and manage contacts in org mode.
 
@@ -766,40 +772,26 @@ Setup json lsp
 #+end_src
 *** Python
 
-Setup lsp for python
-#+begin_src emacs-lisp
-(use-package python-mode
-  :ensure t
-  :hook (python-mode . lsp-deferred)
- ;; :custom
-  ;; NOTE: Set these if Python 3 is called "python3" on your system!
-  ;; (python-shell-interpreter "python3")
-  ;; (dap-python-executable "python3")
-;;  (dap-python-debugger 'debugpy)
-;;  :config
-;;  (require 'dap-python)
-  )
-#+end_src
+In order to not clutter the system python userspace, packages for application development are stored in virtual environments as part of the application itself. This includes both application, testing, and development dependencies. In order to properly interact with python within emacs Pyvenv can be used to set the current python environment which will be passed to any subsequent python relates commands (lsp, REPL, etc)
 
-**** pyenv
 #+begin_src emacs-lisp
 (use-package pyvenv
-  :demand t
   :config
-  (setq pyvenv-workon "emacs")  ; Default venv
-  (pyvenv-tracking-mode 1))  ; Automatically use pyvenv-workon via dir-locals
+  (pyvenv-mode 1))
 #+end_src
-**** Jedi Language Server
+
+As stated above the lsp server is installed in the virtual environments on a per project basis. If the environment has not been enabled in the current emacs session, query the user for the python environment before starting lsp.
 
 #+begin_src emacs-lisp
-(use-package jedi)
+(defun tlh/enable-lsp-on-pyvenv ()
+  "Enable lsp mode after pyvenv activation"
+  (when (null (getenv "VIRTUAL_ENV"))
+    (call-interactively 'pyvenv-activate))
+  (lsp-deferred))
 
-(use-package lsp-jedi
-  :ensure t
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
+  (use-package python-mode
+    :ensure t
+    :hook (python-mode . tlh/enable-lsp-on-pyvenv))
 #+end_src
 
 Install the jedi language server globally with the following command
@@ -903,7 +895,7 @@ Origami folding library
 ** YAML
 #+begin_src emacs-lisp
 (use-package yaml-mode)
-#+en
+#+end_src
 * Docker
 ** Docker File Mode
 #+begin_src emacs-lisp
