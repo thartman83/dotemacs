@@ -780,6 +780,12 @@ In order to not clutter the system python userspace, packages for application de
   (pyvenv-mode 1))
 #+end_src
 
+Install the python language server into the virtual environment
+#+begin_src shell
+source venv/bin/activate
+pip install 'python-lsp-server[all]'
+#+end_src
+
 As stated above the lsp server is installed in the virtual environments on a per project basis. If the environment has not been enabled in the current emacs session, query the user for the python environment before starting lsp.
 
 #+begin_src emacs-lisp
@@ -792,11 +798,6 @@ As stated above the lsp server is installed in the virtual environments on a per
   (use-package python-mode
     :ensure t
     :hook (python-mode . tlh/enable-lsp-on-pyvenv))
-#+end_src
-
-Install the jedi language server globally with the following command
-#+begin_src shell
-pip install -U jedi-language-server
 #+end_src
 
 *** Open Scad
