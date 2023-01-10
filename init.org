@@ -527,16 +527,6 @@ In order to keep my laptop and desktop in sync with one another in terms of roam
 (use-package git-auto-commit-mode)
 #+end_src
 
-** org-contacts
-Use org-contacts to create and manage contacts in org mode.
-
-#+begin_src emacs-lisp
-(use-package org-contacts
-  :ensure nil
-  :after org
-  :custom (org-contacts-files '("~/org/contacts.org")))
-#+end_src
-
 ** org-capture
 Customizations to org mode capture templates
 #+begin_src emacs-lisp
@@ -558,7 +548,7 @@ Customizations to org mode capture templates
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
      (("P" "Project")
-     )))
+     ))))
 #+end_src
 
 * Ivy and Counsel

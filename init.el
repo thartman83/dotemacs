@@ -312,11 +312,6 @@
 
 (use-package git-auto-commit-mode)
 
-(use-package org-contacts
-  :ensure nil
-  :after org
-  :custom (org-contacts-files '("~/org/contacts.org")))
-
 (use-package org-capture
   :ensure nil
   :after org
@@ -334,7 +329,8 @@
      ("a" "Appointment" entry
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
-     )))
+     (("P" "Project")
+     ))))
 
 (use-package ivy
   :diminish
@@ -545,8 +541,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(lsp-jedi emacsql emacsql-sqlite js2-mode no-littering ws-butler yasnippet which-key visual-fill-column use-package typescript-mode telephone-line smartparens scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets multiple-cursors mixed-pitch lua-mode lsp-ui lsp-treemacs json-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode eldoc doom-themes dockerfile-mode docker-compose-mode docker dash-functional counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
