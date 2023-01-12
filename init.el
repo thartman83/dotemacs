@@ -470,9 +470,13 @@
     (call-interactively 'pyvenv-activate))
   (lsp-deferred))
 
-  (use-package python-mode
-    :ensure t
-    :hook (python-mode . tlh/enable-lsp-on-pyvenv))
+(use-package python-mode
+  :ensure t
+  :hook ((python-mode . tlh/enable-lsp-on-pyvenv)
+         (flycheck-mode . (lambda ()
+                            (flycheck-add-next-checker 'lsp 'python-flake8))))
+  :custom
+  (lsp-pylsp-plugins-pylint-enabled t))
 
 (use-package scad-mode)
 (use-package scad-preview
