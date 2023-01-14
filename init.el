@@ -545,6 +545,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" default))
+ '(package-selected-packages
+   '(smart-mode-line yasnippet ws-butler which-key visual-fill-column use-package typescript-mode telephone-line smartparens scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-treemacs lsp-jedi json-mode js2-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode doom-themes dockerfile-mode docker-tramp docker-compose-mode docker dash-functional counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
