@@ -194,6 +194,8 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
+  (when frame
+    (select-frame frame))
   (when (display-graphic-p frame)
       (set-transparency 90)))
 
@@ -201,7 +203,8 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 (mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
-(add-hook 'before-make-frame-functions 'new-frame-setup)
+;;(add-hook 'before-make-frame-functions 'new-frame-setup)
+(add-hook 'server-after-make-frame-hook 'new-frame-setup)
 #+end_src
 
 ** Mixed Pitch
@@ -890,6 +893,12 @@ Origami folding library
 ** YAML
 #+begin_src emacs-lisp
 (use-package yaml-mode)
+#+end_src
+* Skelator
+Install skelator
+
+#+begin_src emacs-lisp
+(use-package skeletor)
 #+end_src
 * Docker
 ** Docker File Mode
