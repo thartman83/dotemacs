@@ -114,11 +114,11 @@
       (set-transparency 90)))
 
 ;; Run for already-existing frames
-(mapc 'new-frame-setup (frame-list))
+;(mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
 ;;(add-hook 'before-make-frame-functions 'new-frame-setup)
-(add-hook 'server-after-make-frame-hook 'new-frame-setup)
+;;(add-hook 'server-after-make-frame-hook 'new-frame-setup)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -397,6 +397,24 @@
 (use-package lsp-treemacs
   :after lsp)
 
+(use-package dap-mode)
+  ;; Uncomment the config below if you want all UI panes to be hidden by default!
+  ;; :custom
+  ;; (lsp-enable-dap-auto-configure nil)
+  ;; :config
+  ;; (dap-ui-mode 1)
+
+  ;;:config
+  ;; Set up Node debugging
+  ;;(require 'dap-node)
+  ;;(dap-node-setup) ;; Automatically installs Node debug adapter if needed
+
+  ;; Bind `C-c l d` to `dap-hydra` for easy access
+  ;;(general-define-key
+  ;;  :keymaps 'lsp-mode-map
+  ;;  :prefix lsp-keymap-prefix
+  ;;  "d" '(dap-hydra t :wk "debugger")))
+
 (use-package company
   :after lsp-mode
   :hook (lsp-mode . company-mode)
@@ -479,7 +497,10 @@
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
   :custom
-  (lsp-pylsp-plugins-pylint-enabled t))
+  (lsp-pylsp-plugins-pylint-enabled t)
+  (dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
 
 (use-package scad-mode)
 (use-package scad-preview
@@ -550,6 +571,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(magit yasnippet ws-butler which-key visual-fill-column use-package typescript-mode telephone-line smartparens smart-mode-line skeletor scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi json-mode js2-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode emacsql-sqlite doom-themes dockerfile-mode docker-tramp docker-compose-mode docker dash-functional dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
