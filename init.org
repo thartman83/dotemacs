@@ -195,14 +195,17 @@ A quick function to set the transparency of emacs when in window mode. I've foun
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
+  (when frame
+    (select-frame frame))
   (when (display-graphic-p frame)
       (set-transparency 75)))
 
 ;; Run for already-existing frames
-(mapc 'new-frame-setup (frame-list))
+;(mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
-(add-hook 'before-make-frame-functions 'new-frame-setup)
+;;(add-hook 'before-make-frame-functions 'new-frame-setup)
+;;(add-hook 'server-after-make-frame-hook 'new-frame-setup)
 #+end_src
 
 ** Mixed Pitch
@@ -384,9 +387,13 @@ The final line prevents org src code from altering the windowing within emacs. I
 (org-babel-do-load-languages 'org-babel-load-languages
 			     '((shell .t)
 			       (emacs-lisp . t)
+<<<<<<< HEAD
              (R . t)))
 
 (setf org-auto-load-images t)
+=======
+             (yaml . t)))
+>>>>>>> origin/main
 
 (setf org-src-window-setup 'other-window)
 #+end_src
@@ -400,7 +407,11 @@ The final line prevents org src code from altering the windowing within emacs. I
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+<<<<<<< HEAD
  (add-to-list 'org-structure-template-alist '("lu" . "src lua"))
+=======
+ (add-to-list 'org-structure-template-alist '("yml" . "src yaml :tangle main.yml"))
+>>>>>>> origin/main
 
  #+end_src
 
@@ -653,24 +664,36 @@ LSP-treemacs
 #+end_src
 
 ** DAP
-#+begin_src
+#+begin_src emacs-lisp
 (use-package dap-mode
+  :custom
+  (bind-keys :prefix "C-c d" :prefix-map debug-keymap
+             ("t" . dap-breakpoint-toggle)
+             ("n" . dap-next)
+             ("s" . dap-step-in)
+             ("S" . dap-step-out)
+             ("c" . dap-continue)
+             ("r" . dap-restart)
+             ("R" . dap-ui-repl)
+             ("d" . dap-debug)))
+
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
   ;; :custom
   ;; (lsp-enable-dap-auto-configure nil)
   ;; :config
   ;; (dap-ui-mode 1)
 
-  :config
+  ;;:config
   ;; Set up Node debugging
-  (require 'dap-node)
-  (dap-node-setup) ;; Automatically installs Node debug adapter if needed
+  ;;(require 'dap-node)
+  ;;(dap-node-setup) ;; Automatically installs Node debug adapter if needed
 
   ;; Bind `C-c l d` to `dap-hydra` for easy access
-  (general-define-key
-    :keymaps 'lsp-mode-map
-    :prefix lsp-keymap-prefix
-    "d" '(dap-hydra t :wk "debugger")))
+  ;;(general-define-key
+  ;;  :keymaps 'lsp-mode-map
+  ;;  :prefix lsp-keymap-prefix
+  ;;  "d" '(dap-hydra t :wk "debugger")))
+
 #+end_src
 
 ** Company
@@ -804,7 +827,10 @@ As stated above the lsp server is installed in the virtual environments on a per
   :config
   (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
-  (lsp-pylsp-plugins-pylint-enabled t))
+  (lsp-pylsp-plugins-pylint-enabled t)
+  (dap-python-debugger 'debugpy)
+  :config
+  (require 'dap-python))
 #+end_src
 
 Setup pytest package to make using pytest runners a bit easier
@@ -918,6 +944,7 @@ Origami folding library
 #+begin_src emacs-lisp
 (use-package yaml-mode)
 #+end_src
+<<<<<<< HEAD
 ** Terraform
 
 Terraform files use a variant of json format. Fortunately there is a major mode for that so lets install that.
@@ -927,7 +954,12 @@ Terraform files use a variant of json format. Fortunately there is a major mode 
   :mode "\\.tf\\'")
 
 #+end_src
+* Skelator
+Install skelator
 
+#+begin_src emacs-lisp
+(use-package skeletor)
+#+end_src
 * Docker
 ** Docker File Mode
 #+begin_src emacs-lisp
