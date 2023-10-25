@@ -572,7 +572,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(magit yasnippet ws-butler which-key visual-fill-column use-package typescript-mode telephone-line smartparens smart-mode-line skeletor scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi json-mode js2-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode emacsql-sqlite doom-themes dockerfile-mode docker-tramp docker-compose-mode docker dash-functional dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
+   '(python-pytest org-make-toc hcl-mode magit yasnippet ws-butler which-key visual-fill-column use-package typescript-mode telephone-line smartparens smart-mode-line skeletor scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi json-mode js2-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode emacsql-sqlite doom-themes dockerfile-mode docker-tramp docker-compose-mode docker dash-functional dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

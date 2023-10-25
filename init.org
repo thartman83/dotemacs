@@ -556,6 +556,11 @@ Customizations to org mode capture templates
      ))))
 #+end_src
 
+** org-make-toc
+Github can use org mode as readme files but doesn't automatically insert a table of contents like it does for normal exporting. Include the org-make-toc package to supplement org readme files being used in github.
+#+begin_src emacs-lisp
+(use-package org-make-toc)
+#+end_src
 * Ivy and Counsel
 #+begin_src emacs-lisp
 (use-package ivy
@@ -811,7 +816,16 @@ As stated above the lsp server is installed in the virtual environments on a per
   (lsp-pylsp-plugins-pylint-enabled t)
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python))
+  (add-to-list 'lsp-enabled-clients 'pylsp)
+  (require 'dap-python)
+  (require 'lsp-pylsp)
+  (add-to-list 'lsp-enabled-clients 'python-lsp-server))
+#+end_src
+
+Install pytest mode
+
+#+begin_src emacs-lisp
+(use-package python-pytest)
 #+end_src
 
 *** Open Scad
@@ -911,6 +925,15 @@ Origami folding library
 #+begin_src emacs-lisp
 (use-package yaml-mode)
 #+end_src
+** HCL2
+
+Terraform and other HashiCorp tools use HCL v2 as their configuration language. Install hcl-mode to support the languages.
+
+#+begin_src emacs-lisp
+(use-package hcl-mode
+  :mode "\\.tf\\'")
+#+end_src
+
 * Skelator
 Install skelator
 
