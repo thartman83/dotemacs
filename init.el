@@ -524,7 +524,7 @@
   (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python)
-  (require 'lsp-pylsp)
+  (require 'lsp-pylsp))
 
 (use-package pytest
   :bind (:map python-mode-map
@@ -619,6 +619,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(restclient yasnippet smartparens kubernetes docker docker-compose-mode dockerfile-mode skeletor terraform-mode origami scss-mode yaml-mode emmet-mode lua-mode scad-preview pytest python-mode ws-butler which-key visual-fill-column typescript-mode telephone-line pyvenv paredit org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lsp-ui json-mode js2-mode ivy-rich git-auto-commit-mode forge flycheck doom-themes dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

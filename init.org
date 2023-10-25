@@ -828,7 +828,7 @@ As stated above the lsp server is installed in the virtual environments on a per
   (dap-python-debugger 'debugpy)
   :config
   (require 'dap-python)
-  (require 'lsp-pylsp)
+  (require 'lsp-pylsp))
 #+end_src
 
 Install pytest mode
