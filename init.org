@@ -385,16 +385,11 @@ The final line prevents org src code from altering the windowing within emacs. I
 (setf org-src-preserve-indentation t)
 
 (org-babel-do-load-languages 'org-babel-load-languages
-			     '((shell .t)
+			     '((shell . t)
 			       (emacs-lisp . t)
-<<<<<<< HEAD
              (R . t)))
-
+;             (yaml . t)))
 (setf org-auto-load-images t)
-=======
-             (yaml . t)))
->>>>>>> origin/main
-
 (setf org-src-window-setup 'other-window)
 #+end_src
 
@@ -407,12 +402,8 @@ The final line prevents org src code from altering the windowing within emacs. I
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-<<<<<<< HEAD
  (add-to-list 'org-structure-template-alist '("lu" . "src lua"))
-=======
  (add-to-list 'org-structure-template-alist '("yml" . "src yaml :tangle main.yml"))
->>>>>>> origin/main
-
  #+end_src
 
 ** Auto-tangle
@@ -792,6 +783,7 @@ Setup json lsp
   :hook (json-mode . lsp-deferred)
   :config
   (add-to-list 'lsp-enabled-clients 'json-ls)
+  (setq js-indent-level 2)
   (setq tab-width 2))
 #+end_src
 *** Python
@@ -830,7 +822,8 @@ As stated above the lsp server is installed in the virtual environments on a per
   (lsp-pylsp-plugins-pylint-enabled t)
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python))
+  (require 'dap-python)
+  (require 'pylsp))
 #+end_src
 
 Setup pytest package to make using pytest runners a bit easier
@@ -850,7 +843,6 @@ Setup pytest package to make using pytest runners a bit easier
 *** Open Scad
 Initialize open scad mode
 #+begin_src emacs-lisp
-(use-package scad-mode)
 (use-package scad-preview
   :mode "\\.scad\\'"
   :custom
@@ -940,11 +932,6 @@ Origami folding library
   (global-origami-mode))
 #+end_src
 
-** YAML
-#+begin_src emacs-lisp
-(use-package yaml-mode)
-#+end_src
-<<<<<<< HEAD
 ** Terraform
 
 Terraform files use a variant of json format. Fortunately there is a major mode for that so lets install that.
