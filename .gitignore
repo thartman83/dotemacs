@@ -35,3 +35,4 @@ site=lisp/*~
 /init-test.el
 /var/
 /async-bytecomp.log
+/snippets/

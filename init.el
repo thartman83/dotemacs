@@ -104,14 +104,15 @@
 (defun set-transparency (value)
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
   (interactive "nTransparency Value 0 - 100: ")
-  (set-frame-parameter (selected-frame) 'alpha value))
+  ;(set-frame-parameter (selected-frame) 'alpha value)
+  (add-to-list 'default-frame-alist '(alpha-background . value)))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
   (when frame
     (select-frame frame))
   (when (display-graphic-p frame)
-      (set-transparency 90)))
+      (set-transparency 75)))
 
 ;; Run for already-existing frames
 ;(mapc 'new-frame-setup (frame-list))
@@ -149,6 +150,8 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+
+(global-set-key (kbd "C-c =") 'calc)
 
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
@@ -210,9 +213,11 @@
 (setf org-src-preserve-indentation t)
 
 (org-babel-do-load-languages 'org-babel-load-languages
-			     '((shell .t)
-			       (emacs-lisp . t)))
-
+			     '((shell . t)
+			       (emacs-lisp . t)
+             (R . t)))
+;             (yaml . t)))
+(setf org-auto-load-images t)
 (setf org-src-window-setup 'other-window)
 
  (require 'org-tempo)
@@ -220,6 +225,8 @@
  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+ (add-to-list 'org-structure-template-alist '("lu" . "src lua"))
+ (add-to-list 'org-structure-template-alist '("yml" . "src yaml :tangle main.yml"))
 
 ;; Automatically tangle our Emacs.org config file when we save it
 (defun efs/org-babel-tangle-config ()
@@ -332,8 +339,10 @@
      ("a" "Appointment" entry
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
-     (("P" "Project")
-     ))))
+     ;(("P" "Project"))
+     )))
+
+(use-package org-make-toc)
 
 (use-package ivy
   :diminish
@@ -397,7 +406,18 @@
 (use-package lsp-treemacs
   :after lsp)
 
-(use-package dap-mode)
+(use-package dap-mode
+  :custom
+  (bind-keys :prefix "C-c d" :prefix-map debug-keymap
+             ("t" . dap-breakpoint-toggle)
+             ("n" . dap-next)
+             ("s" . dap-step-in)
+             ("S" . dap-step-out)
+             ("c" . dap-continue)
+             ("r" . dap-restart)
+             ("R" . dap-ui-repl)
+             ("d" . dap-debug)))
+
   ;; Uncomment the config below if you want all UI panes to be hidden by default!
   ;; :custom
   ;; (lsp-enable-dap-auto-configure nil)
@@ -479,6 +499,7 @@
   :hook (json-mode . lsp-deferred)
   :config
   (add-to-list 'lsp-enabled-clients 'json-ls)
+  (setq js-indent-level 2)
   (setq tab-width 2))
 
 (use-package pyvenv
@@ -496,13 +517,26 @@
   :hook ((python-mode . tlh/enable-lsp-on-pyvenv)
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
+  :config
+  (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
   (lsp-pylsp-plugins-pylint-enabled t)
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python))
+  (require 'dap-python)
+  (require 'lsp-pylsp)
 
-(use-package scad-mode)
+(use-package pytest
+  :bind (:map python-mode-map
+              ("C-c C-t a" . pytest-all)
+              ("C-c C-t m" . pytest-module)
+              ("C-c C-t ." . pytest-one)
+              ("C-c C-t c" . pytest-again)
+              ("C-c C-t d" . pytest-directory)
+              ("C-c C-t pa" . pytest-pdb-all)
+              ("C-c C-t m" . pytest-pdb-module)
+              ("C-c C-t p." . pytest-pdb-one)))
+
 (use-package scad-preview
   :mode "\\.scad\\'"
   :custom
@@ -539,7 +573,11 @@
   :config
   (global-origami-mode))
 
-(use-package yaml-mode)
+(use-package terraform-mode
+  :mode "\\.tf\\'")
+
+(use-package hcl-mode
+  :mode "\\.tf\\'")
 
 (use-package skeletor)
 
@@ -552,10 +590,20 @@
   :ensure t
   :bind ("C-c d" . docker))
 
+(use-package kubernetes
+  :ensure t
+  :commands (kubernetes-overview)
+  :config
+  (setq kubernetes-poll-frequency 3600
+        kubernetes-redraw-frequency 3600))
+
 (use-package smartparens
   :config
   (add-hook 'prog-mode-hook 'turn-on-smartparens-mode)
   (sp-local-pair '(emacs-lisp-mode lisp-mode) "'" "'" :actions nil))
+
+(use-package treemacs
+  )
 
 (use-package yasnippet
   :custom
@@ -571,8 +619,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(python-pytest org-make-toc hcl-mode magit yasnippet ws-butler which-key visual-fill-column use-package typescript-mode telephone-line smartparens smart-mode-line skeletor scss-mode scad-preview restclient pyvenv python-mode paredit origami org-roam org-contrib org-contacts org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui lsp-jedi json-mode js2-mode jedi ivy-rich ivy-pass git-auto-commit-mode forge flycheck emmet-mode emacsql-sqlite doom-themes dockerfile-mode docker-tramp docker-compose-mode docker dash-functional dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
