@@ -159,6 +159,14 @@ For whatever reason a number of packages require dash but don't actually pull it
 ;;(use-package dash)
 #+end_src
 
+** CL
+
+Some packages need cl to be loaded pretty early so doing that here
+
+#+begin_src elisp
+(require 'cl)
+#+end_src
+
 * Appearance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
 
@@ -187,25 +195,26 @@ From the doom themes package use the doom-moonlight theme
 A quick function to set the transparency of emacs when in window mode. I've found 80% to be the most comfortable.
 
 #+begin_src emacs-lisp
-(defun set-transparency (value)
-  "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
-  (interactive "nTransparency Value 0 - 100: ")
-  ;(set-frame-parameter (selected-frame) 'alpha value)
-  (set-frame-parameter nil 'alpha-background value))
+ ;; Set transparency of emacs
+ (defun set-transparency (value)
+   "Sets the transparency of the frame window. 0=transparent/100=opaque"
+   (interactive "nTransparency Value 0 - 100 opaque:")
+   (set-frame-parameter (selected-frame) 'alpha value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
+  (message "in new frame setup")
   (when frame
     (select-frame frame))
   (when (display-graphic-p frame)
-      (set-transparency 75)))
+      (set-transparency 80)))
 
 ;; Run for already-existing frames
 ;(mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
 ;;(add-hook 'before-make-frame-functions 'new-frame-setup)
-;;(add-hook 'server-after-make-frame-hook 'new-frame-setup)
+(add-to-list 'after-make-frame-functions #'new-frame-setup)
 #+end_src
 
 ** Mixed Pitch
@@ -572,6 +581,11 @@ Customizations to org mode capture templates
      ("a" "Appointment" entry
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
+     ("t" "Ticket" entry
+      (file+headline "~/nodes/globals/tickets.org" "Tickets"),
+      " * SUBMITTED %? %^G\n %T\n%i")
+
+
      ;(("P" "Project"))
      )))
 #+end_src
@@ -765,7 +779,6 @@ Paredit mode
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
   (add-hook 'lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
-  ;(add-hook 'ielm-mode-hook 'paredit-mode)
 
   ;; turn on paredit for Cask files too
   (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
@@ -788,6 +801,18 @@ Setup Typescript to use lsp
 (use-package js2-mode
   :mode "\\.js\\'"
   :hook (js2-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+#+end_src
+
+*** JSX
+
+Add support for react style jsx template code:
+#+begin_src emacs-lisp
+(use-package rjsx-mode
+  :mode "\\.tsx\\'"
+  :hook (rjsx-mode . lsp-deferred)
   :config
   (setq tab-width 2)
   (add-to-list 'lsp-enabled-clients 'jsts-ls))
@@ -839,8 +864,7 @@ As stated above the lsp server is installed in the virtual environments on a per
   (lsp-pylsp-plugins-pylint-enabled t)
   ;;(dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python)
-  (require 'lsp-pylsp))
+  (require 'dap-python))
 #+end_src
 
 Install pytest mode
@@ -938,6 +962,20 @@ Setup yaml support
 (use-package yaml-mode)
 #+end_src
 
+*** CSS
+For css/lesscss/sass/scss languages install the language server:
+
+M-x lsp-install-server RET css-ls RET
+
+#+begin_src emacs-lisp
+(use-package css-mode
+  :mode "\\.css'"
+  :hook (css-mode . lsp-deferred)
+  :config
+  (setq css-indent-offset 4)
+  (add-to-list 'lsp-enabled-clients 'css-ls))
+#+end_src
+
 *** SCSS
 #+begin_src emacs-lisp
 ;;(lsp-install-server 'css-ls)
@@ -946,7 +984,7 @@ Setup yaml support
   :mode "\\.scss'"
   :hook (scss-mode . lsp-deferred)
   :config
-  (setq scss-indent-level 2)
+  (setq scss-indent-level 4)
   (add-to-list 'lsp-enabled-clients 'css-ls))
 #+end_src
 ** Origami

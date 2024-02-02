@@ -101,25 +101,26 @@
 (use-package doom-themes
   :init (load-theme 'doom-acario-dark t))
 
-(defun set-transparency (value)
-  "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
-  (interactive "nTransparency Value 0 - 100: ")
-  ;(set-frame-parameter (selected-frame) 'alpha value)
-  (set-frame-parameter nil 'alpha-background value))
+ ;; Set transparency of emacs
+ (defun set-transparency (value)
+   "Sets the transparency of the frame window. 0=transparent/100=opaque"
+   (interactive "nTransparency Value 0 - 100 opaque:")
+   (set-frame-parameter (selected-frame) 'alpha value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
+  (message "in new frame setup")
   (when frame
     (select-frame frame))
   (when (display-graphic-p frame)
-      (set-transparency 75)))
+      (set-transparency 80)))
 
 ;; Run for already-existing frames
 ;(mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
 ;;(add-hook 'before-make-frame-functions 'new-frame-setup)
-;;(add-hook 'server-after-make-frame-hook 'new-frame-setup)
+(add-to-list 'after-make-frame-functions #'new-frame-setup)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -348,6 +349,11 @@
      ("a" "Appointment" entry
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
+     ("t" "Ticket" entry
+      (file+headline "~/nodes/globals/tickets.org" "Tickets"),
+      " * SUBMITTED %? %^G\n %T\n%i")
+
+
      ;(("P" "Project"))
      )))
 
@@ -485,7 +491,6 @@
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
   (add-hook 'lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
-  ;(add-hook 'ielm-mode-hook 'paredit-mode)
 
   ;; turn on paredit for Cask files too
   (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
@@ -500,6 +505,13 @@
 (use-package js2-mode
   :mode "\\.js\\'"
   :hook (js2-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+
+(use-package rjsx-mode
+  :mode "\\.tsx\\'"
+  :hook (rjsx-mode . lsp-deferred)
   :config
   (setq tab-width 2)
   (add-to-list 'lsp-enabled-clients 'jsts-ls))
@@ -530,10 +542,9 @@
   (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
   (lsp-pylsp-plugins-pylint-enabled t)
-  (dap-python-debugger 'debugpy)
+  ;;(dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python)
-  (require 'lsp-pylsp))
+  (require 'dap-python))
 
 (use-package pytest
   :bind (:map python-mode-map
@@ -569,13 +580,20 @@
 
 (use-package yaml-mode)
 
+(use-package css-mode
+  :mode "\\.css'"
+  :hook (css-mode . lsp-deferred)
+  :config
+  (setq css-indent-offset 4)
+  (add-to-list 'lsp-enabled-clients 'css-ls))
+
 ;;(lsp-install-server 'css-ls)
 
 (use-package scss-mode
   :mode "\\.scss'"
   :hook (scss-mode . lsp-deferred)
   :config
-  (setq scss-indent-level 2)
+  (setq scss-indent-level 4)
   (add-to-list 'lsp-enabled-clients 'css-ls))
 
 (use-package origami
