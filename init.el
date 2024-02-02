@@ -105,7 +105,7 @@
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
   (interactive "nTransparency Value 0 - 100: ")
   ;(set-frame-parameter (selected-frame) 'alpha value)
-  (add-to-list 'default-frame-alist '(alpha-background . value)))
+  (set-frame-parameter nil 'alpha-background value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
@@ -141,6 +141,15 @@
   :config
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
+
+(use-package highlight-indent-guides
+  :init
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-suppress-auto-error t)
+  (set-face-foreground 'highlight-indent-guides-character-face "#222222")
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode))
 
 (use-package multiple-cursors
   :ensure t)
@@ -476,7 +485,7 @@
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
   (add-hook 'lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
-  (add-hook 'ielm-mode-hook 'paredit-mode)
+  ;(add-hook 'ielm-mode-hook 'paredit-mode)
 
   ;; turn on paredit for Cask files too
   (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
@@ -619,8 +628,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(restclient yasnippet smartparens kubernetes docker docker-compose-mode dockerfile-mode skeletor terraform-mode origami scss-mode yaml-mode emmet-mode lua-mode scad-preview pytest python-mode ws-butler which-key visual-fill-column typescript-mode telephone-line pyvenv paredit org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lsp-ui json-mode js2-mode ivy-rich git-auto-commit-mode forge flycheck doom-themes dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

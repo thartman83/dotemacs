@@ -191,7 +191,7 @@ A quick function to set the transparency of emacs when in window mode. I've foun
   "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
   (interactive "nTransparency Value 0 - 100: ")
   ;(set-frame-parameter (selected-frame) 'alpha value)
-  (add-to-list 'default-frame-alist '(alpha-background . value)))
+  (set-frame-parameter nil 'alpha-background value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
@@ -248,6 +248,18 @@ Updating the mode line for more awesome. Currently playing around with telephone
   (show-paren-mode 1))
 #+end_src
 
+
+** Highlight Indent
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+  :init
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-suppress-auto-error t)
+  (set-face-foreground 'highlight-indent-guides-character-face "#222222")
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode))
+#+end_src
 * UI Improvements
 ** Multiple Cursors
 Initialize multiple cursors mode
@@ -753,7 +765,7 @@ Paredit mode
   (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
   (add-hook 'lisp-mode-hook 'paredit-mode)
   (add-hook 'scheme-mode-hook 'paredit-mode)
-  (add-hook 'ielm-mode-hook 'paredit-mode)
+  ;(add-hook 'ielm-mode-hook 'paredit-mode)
 
   ;; turn on paredit for Cask files too
   (add-to-list 'auto-mode-alist '("Cask" . paredit-mode)))
@@ -825,7 +837,7 @@ As stated above the lsp server is installed in the virtual environments on a per
   (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
   (lsp-pylsp-plugins-pylint-enabled t)
-  (dap-python-debugger 'debugpy)
+  ;;(dap-python-debugger 'debugpy)
   :config
   (require 'dap-python)
   (require 'lsp-pylsp))
