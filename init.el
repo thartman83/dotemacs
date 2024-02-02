@@ -101,25 +101,26 @@
 (use-package doom-themes
   :init (load-theme 'doom-acario-dark t))
 
-(defun set-transparency (value)
-  "Set the transparency `VALUE' of the frame window 0=transparent/100=opaque."
-  (interactive "nTransparency Value 0 - 100: ")
-  ;(set-frame-parameter (selected-frame) 'alpha value)
-  (add-to-list 'default-frame-alist '(alpha-background . value)))
+ ;; Set transparency of emacs
+ (defun set-transparency (value)
+   "Sets the transparency of the frame window. 0=transparent/100=opaque"
+   (interactive "nTransparency Value 0 - 100 opaque:")
+   (set-frame-parameter (selected-frame) 'alpha value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
+  (message "in new frame setup")
   (when frame
     (select-frame frame))
   (when (display-graphic-p frame)
-      (set-transparency 75)))
+      (set-transparency 90)))
 
 ;; Run for already-existing frames
 ;(mapc 'new-frame-setup (frame-list))
 
 ;; Run when a new frame is created
 ;;(add-hook 'before-make-frame-functions 'new-frame-setup)
-;;(add-hook 'server-after-make-frame-hook 'new-frame-setup)
+(add-to-list 'after-make-frame-functions #'new-frame-setup)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -141,6 +142,8 @@
   :config
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
+
+(use-package highlight-indent-guides)
 
 (use-package multiple-cursors
   :ensure t)
@@ -339,6 +342,11 @@
      ("a" "Appointment" entry
       (file+headline "~/notes/globals/calendar.org" "Appointments")
       "* %? %^G\n SCHEDULED: %^t\n %i")
+     ("t" "Ticket" entry
+      (file+headline "~/nodes/globals/tickets.org" "Tickets"),
+      " * SUBMITTED %? %^G\n %T\n%i")
+
+
      ;(("P" "Project"))
      )))
 
@@ -495,6 +503,13 @@
   (setq tab-width 2)
   (add-to-list 'lsp-enabled-clients 'jsts-ls))
 
+(use-package rjsx-mode
+  :mode "\\.tsx\\'"
+  :hook (rjsx-mode . lsp-deferred)
+  :config
+  (setq tab-width 2)
+  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
   :config
@@ -523,8 +538,7 @@
   (lsp-pylsp-plugins-pylint-enabled t)
   (dap-python-debugger 'debugpy)
   :config
-  (require 'dap-python)
-  (require 'lsp-pylsp))
+  (require 'dap-python))
 
 (use-package pytest
   :bind (:map python-mode-map
@@ -560,13 +574,20 @@
 
 (use-package yaml-mode)
 
+(use-package css-mode
+  :mode "\\.css'"
+  :hook (css-mode . lsp-deferred)
+  :config
+  (setq css-indent-offset 4)
+  (add-to-list 'lsp-enabled-clients 'css-ls))
+
 ;;(lsp-install-server 'css-ls)
 
 (use-package scss-mode
   :mode "\\.scss'"
   :hook (scss-mode . lsp-deferred)
   :config
-  (setq scss-indent-level 2)
+  (setq scss-indent-level 4)
   (add-to-list 'lsp-enabled-clients 'css-ls))
 
 (use-package origami
@@ -619,8 +640,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(restclient yasnippet smartparens kubernetes docker docker-compose-mode dockerfile-mode skeletor terraform-mode origami scss-mode yaml-mode emmet-mode lua-mode scad-preview pytest python-mode ws-butler which-key visual-fill-column typescript-mode telephone-line pyvenv paredit org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lsp-ui json-mode js2-mode ivy-rich git-auto-commit-mode forge flycheck doom-themes dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
