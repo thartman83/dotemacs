@@ -856,6 +856,8 @@ As stated above the lsp server is installed in the virtual environments on a per
 #+begin_src emacs-lisp
 (defun tlh/enable-lsp-on-pyvenv ()
   "Enable lsp mode after pyvenv activation"
+  (add-to-list 'lsp-enabled-clients 'pylsp)
+
   (when (null (getenv "VIRTUAL_ENV"))
     (call-interactively 'pyvenv-activate))
   (lsp-deferred))
@@ -865,8 +867,6 @@ As stated above the lsp server is installed in the virtual environments on a per
   :hook ((python-mode . tlh/enable-lsp-on-pyvenv)
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
-  :config
-  (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
   (lsp-pylsp-plugins-pylint-enabled t)
   ;;(dap-python-debugger 'debugpy)

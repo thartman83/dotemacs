@@ -535,7 +535,7 @@
 
 (use-package python-mode
   :ensure t
-  :hook ((python-mode . tlh/enable-lsp-on-pyvenv)
+  :hook ((python-mode . lsp-deferred)
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
   :config
@@ -556,6 +556,13 @@
               ("C-c C-t pa" . pytest-pdb-all)
               ("C-c C-t m" . pytest-pdb-module)
               ("C-c C-t p." . pytest-pdb-one)))
+
+(use-package pipenv
+  :hook (python-mode . pipenv-mode)
+  :init
+  (setq
+   pipenv-projectile-after-switch-function
+   #'pipenv-projectile-after-switch-extended))
 
 (use-package scad-preview
   :mode "\\.scad\\'"
