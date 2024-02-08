@@ -646,6 +646,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(beacon yasnippet ws-butler which-key visual-fill-column typescript-mode terraform-mode telephone-line smartparens skeletor scss-mode scad-preview rjsx-mode restclient pyvenv python-mode pytest paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indentation highlight-indent-guides git-auto-commit-mode forge flycheck emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

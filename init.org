@@ -288,6 +288,13 @@ Initialize multiple cursors mode
   (setq which-key-idle-delay 1))
 #+end_src
 
+** Beacon
+Add beacon mode for cursor following goodness.
+
+#+begin_src emacs-lisp
+(use-package beacon
+:init (beacon-mode 1))
+#+end_src
 * Custom/Global Keybindings
 ** Calc
 Bind turning the calc mode on and off using C-c =
