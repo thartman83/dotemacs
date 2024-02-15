@@ -167,6 +167,20 @@ Some packages need cl to be loaded pretty early so doing that here
 (require 'cl)
 #+end_src
 
+** f
+Emacs files and directory utilities. Some other packages already use this package but adding it here because it will be used later in configuration so explicitly referencing it.
+#+begin_src emacs-lisp
+(use-package f
+  :ensure t)
+#+end_src
+** Exists in file
+Utility function that determines if a string exists in a file
+#+begin_src emacs-lisp
+(defun str-in-file-p (needle file)
+  "Returns t if string `needle' exists in `file'."
+  (and (f-exists-p file)
+       (integerp (string-match-p needle (f-read-text file 'utf-8)))))
+#+end_src
 * Appearance
 This section configures the overall apparance of emacs from fonts to themes, transpancy and other visual nicities.
 
@@ -687,7 +701,7 @@ LSP-UI
 #+end_src
 
 LSP-treemacs
-#+begin_src emacs-lisp
+#+begin_src
 (use-package lsp-treemacs
   :after lsp)
 #+end_src
@@ -752,9 +766,26 @@ We also use company-box to further enhance the look of the completions with icon
 ** Projectile
 
 #+begin_src emacs-lisp
+(defun tlh/autoload-python-venv ()
+  (message (concat "Loading pyvenv " (projectile-project-root) "venv"))
+  (when (string= projectile-project-type "python-pip")
+    (pyenv-activate (concat (projectile-project-dir) "venv"))))
+
 (use-package projectile
   :diminish projectile-mode
-  :config (projectile-mode)
+  :config
+  (add-hook 'projectile-after-switch-project-hook #'tlh/autoload-python-venv)
+  (projectile-mode)
+  ;; detect fastapi projects
+  (projectile-register-project-type
+   'python-fastapi
+   #'(lambda (project-root)
+       (str-in-file-p "fastapi" (concat project-root "requirements.txt")))
+   :project-file "requirements.txt"
+   :compile "uvicorn app.main:app --reload"
+   :test ""
+   :run "uvicorn app.main:app --reload"
+   :test-prefix "test_")
   :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
@@ -797,7 +828,8 @@ Setup Typescript to use lsp
 #+begin_src emacs-lisp
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
+  :hook ((typescript-mode . lsp-deferred)
+         (typescript-mode . prettify-symbols-mode))
   :config
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
@@ -851,25 +883,28 @@ source venv/bin/activate
 pip install 'python-lsp-server[all]'
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package auto-virtualenv
+  :ensure t
+  :init
+  (use-package pyvenv
+    :ensure t)
+  :config
+  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv))
+#+end_src
+
 As stated above the lsp server is installed in the virtual environments on a per project basis. If the environment has not been enabled in the current emacs session, query the user for the python environment before starting lsp.
 
 #+begin_src emacs-lisp
-(defun tlh/enable-lsp-on-pyvenv ()
-  "Enable lsp mode after pyvenv activation"
-  (add-to-list 'lsp-enabled-clients 'pylsp)
-
-  (when (null (getenv "VIRTUAL_ENV"))
-    (call-interactively 'pyvenv-activate))
-  (lsp-deferred))
-
 (use-package python-mode
   :ensure t
-  :hook ((python-mode . tlh/enable-lsp-on-pyvenv)
+  :hook ((python-mode . lsp-deferred)
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
   :custom
+  (add-to-list 'lsp-enabled-clients 'pylsp)
   (lsp-pylsp-plugins-pylint-enabled t)
-  ;;(dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
 #+end_src
@@ -1067,11 +1102,34 @@ Turn on smart parens mode for all programming modes. Exclude single quote paring
   (sp-local-pair '(emacs-lisp-mode lisp-mode) "'" "'" :actions nil))
 #+end_src
 * Treemacs
-Default setup for treemacs
-Disabling for the moment
 #+begin_src emacs-lisp
 (use-package treemacs
-  )
+  :ensure t
+  :defer t
+  :bind (("C-c w" . treemacs-select-window))
+  :config
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+  (when treemacs-python-executable
+    (treemacs-git-commit-diff-mode t))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
 #+end_src
 
 * yassnippet

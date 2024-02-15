@@ -94,6 +94,14 @@
 
 ;;(use-package dash)
 
+(use-package f
+  :ensure t)
+
+(defun str-in-file-p (needle file)
+  "Returns t if string `needle' exists in `file'."
+  (and (f-exists-p file)
+       (integerp (string-match-p needle (f-read-text file 'utf-8)))))
+
 (add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
 
 ;;(use-package doom-themes
@@ -160,6 +168,9 @@
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+
+(use-package beacon
+:init (beacon-mode 1))
 
 (global-set-key (kbd "C-c =") 'calc)
 
@@ -418,9 +429,6 @@
   :custom
   (lsp-ui-doc-position 'bottom))
 
-(use-package lsp-treemacs
-  :after lsp)
-
 (use-package dap-mode
   :custom
   (bind-keys :prefix "C-c d" :prefix-map debug-keymap
@@ -464,9 +472,26 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+(defun tlh/autoload-python-venv ()
+  (message (concat "Loading pyvenv " (projectile-project-root) "venv"))
+  (when (string= projectile-project-type "python-pip")
+    (pyenv-activate (concat (projectile-project-dir) "venv"))))
+
 (use-package projectile
   :diminish projectile-mode
-  :config (projectile-mode)
+  :config
+  (add-hook 'projectile-after-switch-project-hook #'tlh/autoload-python-venv)
+  (projectile-mode)
+  ;; detect fastapi projects
+  (projectile-register-project-type
+   'python-fastapi
+   #'(lambda (project-root)
+       (str-in-file-p "fastapi" (concat project-root "requirements.txt")))
+   :project-file "requirements.txt"
+   :compile "uvicorn app.main:app --reload"
+   :test ""
+   :run "uvicorn app.main:app --reload"
+   :test-prefix "test_")
   :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
@@ -497,7 +522,8 @@
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :hook (typescript-mode . lsp-deferred)
+  :hook ((typescript-mode . lsp-deferred)
+         (typescript-mode . prettify-symbols-mode))
   :config
   (setq typescript-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
@@ -527,22 +553,23 @@
   :config
   (pyvenv-mode 1))
 
-(defun tlh/enable-lsp-on-pyvenv ()
-  "Enable lsp mode after pyvenv activation"
-  (when (null (getenv "VIRTUAL_ENV"))
-    (call-interactively 'pyvenv-activate))
-  (lsp-deferred))
+(use-package auto-virtualenv
+  :ensure t
+  :init
+  (use-package pyvenv
+    :ensure t)
+  :config
+  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv))
 
 (use-package python-mode
   :ensure t
   :hook ((python-mode . lsp-deferred)
          (flycheck-mode . (lambda ()
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
-  :config
-  (add-to-list 'lsp-enabled-clients 'pylsp)
   :custom
+  (add-to-list 'lsp-enabled-clients 'pylsp)
   (lsp-pylsp-plugins-pylint-enabled t)
-  ;;(dap-python-debugger 'debugpy)
   :config
   (require 'dap-python))
 
@@ -556,13 +583,6 @@
               ("C-c C-t pa" . pytest-pdb-all)
               ("C-c C-t m" . pytest-pdb-module)
               ("C-c C-t p." . pytest-pdb-one)))
-
-(use-package pipenv
-  :hook (python-mode . pipenv-mode)
-  :init
-  (setq
-   pipenv-projectile-after-switch-function
-   #'pipenv-projectile-after-switch-extended))
 
 (use-package scad-preview
   :mode "\\.scad\\'"
@@ -637,7 +657,32 @@
   (sp-local-pair '(emacs-lisp-mode lisp-mode) "'" "'" :actions nil))
 
 (use-package treemacs
-  )
+  :ensure t
+  :defer t
+  :bind (("C-c w" . treemacs-select-window))
+  :config
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+  (when treemacs-python-executable
+    (treemacs-git-commit-diff-mode t))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
 
 (use-package yasnippet
   :custom
@@ -653,8 +698,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(beacon yasnippet ws-butler which-key visual-fill-column typescript-mode terraform-mode telephone-line smartparens skeletor scss-mode scad-preview rjsx-mode restclient pyvenv python-mode pytest paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indentation highlight-indent-guides git-auto-commit-mode forge flycheck emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
