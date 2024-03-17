@@ -271,7 +271,6 @@ Updating the mode line for more awesome. Currently playing around with telephone
   (show-paren-mode 1))
 #+end_src
 
-
 ** Highlight Indent
 #+begin_src emacs-lisp
 (use-package highlight-indent-guides
@@ -282,6 +281,15 @@ Updating the mode line for more awesome. Currently playing around with telephone
   :config
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
   (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode))
+#+end_src
+** Colored Compilation Buffers
+Add colored ansi mode to compilation buffers for well... colors to show up
+
+#+begin_src emacs-lisp
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (ansi-color-apply-on-region compilation-filter-start (point)))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+end_src
 * UI Improvements
 ** Multiple Cursors
@@ -309,6 +317,14 @@ Add beacon mode for cursor following goodness.
 (use-package beacon
 :init (beacon-mode 1))
 #+end_src
+* Performance Tuning
+
+[[https://emacs-lsp.github.io/lsp-mode/page/performance/][LSP Performance Tuning]]
+
+#+begin_src emacs-lisp
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024))
+#+end_src
 * Custom/Global Keybindings
 ** Calc
 Bind turning the calc mode on and off using C-c =
@@ -316,6 +332,36 @@ Bind turning the calc mode on and off using C-c =
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c =") 'calc)
 #+end_src
+** Window Jumping
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c i")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'up)
+                      (select-window (window-in-direction 'up)))))
+
+(global-set-key (kbd "C-c m")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'down)
+                      (select-window (window-in-direction 'down)))))
+
+(global-set-key (kbd "C-c j")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'left)
+                      (select-window (window-in-direction 'left)))))
+
+(global-set-key (kbd "C-c l")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'right)
+                      (select-window (window-in-direction 'right)))))
+
+
+#+end_src
+
 * Editing Configuration
 General configuration for editing within buffers
 
@@ -679,14 +725,16 @@ Basic LSP setup
 #+begin_src emacs-lisp
 
 (defun efs/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (let ((lsp-keymap-prefix "C-c l"))
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode)
+    (lsp-enable-which-key-integration)))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . efs/lsp-mode-setup)
   :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  (setq lsp-keymap-prefix "C-c s")  ;; Or 'C-l', 's-l'
   :config
   (lsp-enable-which-key-integration t))
 
@@ -1247,6 +1295,17 @@ Turning this off for the moment
                           ;; (bookmarks . 5)
                           ;; (recents  . 5)
                           (projects . 5))))
+#+end_src
+
+* Experimental
+
+** Evil Mode
+Dare I?
+#+begin_src emacs-lisp
+(use-package evil
+; :config
+;  (evil-mode 1)
+)
 #+end_src
 
 * Customization

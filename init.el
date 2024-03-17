@@ -160,6 +160,11 @@
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
   (add-hook 'yaml-mode-hook 'highlight-indent-guides-mode))
 
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (ansi-color-apply-on-region compilation-filter-start (point)))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
 (use-package multiple-cursors
   :ensure t)
 
@@ -172,7 +177,34 @@
 (use-package beacon
 :init (beacon-mode 1))
 
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024))
+
 (global-set-key (kbd "C-c =") 'calc)
+
+(global-set-key (kbd "C-c i")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'up)
+                      (select-window (window-in-direction 'up)))))
+
+(global-set-key (kbd "C-c m")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'down)
+                      (select-window (window-in-direction 'down)))))
+
+(global-set-key (kbd "C-c j")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'left)
+                      (select-window (window-in-direction 'left)))))
+
+(global-set-key (kbd "C-c l")
+                #'(lambda ()
+                    (interactive)
+                    (when (window-in-direction 'right)
+                      (select-window (window-in-direction 'right)))))
 
 (setq-default tab-width 2)
 (setq-default indent-tabs-mode nil)
@@ -413,14 +445,16 @@
 (use-package flycheck)
 
 (defun efs/lsp-mode-setup ()
-  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  (lsp-headerline-breadcrumb-mode))
+  (let ((lsp-keymap-prefix "C-c l"))
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode)
+    (lsp-enable-which-key-integration)))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . efs/lsp-mode-setup)
   :init
-  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  (setq lsp-keymap-prefix "C-c s")  ;; Or 'C-l', 's-l'
   :config
   (lsp-enable-which-key-integration t))
 
@@ -692,6 +726,11 @@
   (mapc #'yas-load-directory yas/root-directory))
 
 (use-package restclient)
+
+(use-package evil
+; :config
+;  (evil-mode 1)
+)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
