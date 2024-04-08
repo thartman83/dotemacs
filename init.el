@@ -180,6 +180,18 @@
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
 
+(setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+
+(setq projectile-known-projects-file
+      (expand-file-name "tmp/projectile-bookmarks.eld" user-emacs-directory)
+      lsp-session-file (expand-file-name "tmp/.lsp-session-v1" user-emacs-directory))
+
+;; auto-save-mode doesn't create the path automatically!
+(make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+
+(setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+      auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+
 (global-set-key (kbd "C-c =") 'calc)
 
 (global-set-key (kbd "C-c i")
@@ -492,6 +504,9 @@
   ;;  :prefix lsp-keymap-prefix
   ;;  "d" '(dap-hydra t :wk "debugger")))
 
+(use-package dap-chrome
+  :after lsp)
+
 (use-package company
   :after lsp-mode
   :hook (lsp-mode . company-mode)
@@ -571,10 +586,11 @@
 
 (use-package rjsx-mode
   :mode "\\.tsx\\'"
-  :hook (rjsx-mode . lsp-deferred)
+  :hook ((rjsx-mode . lsp-deferred)
+         (rjsx-mode . emmet-mode))
   :config
   (setq tab-width 2)
-  (add-to-list 'lsp-enabled-clients 'jsts-ls))
+  (add-to-list 'lsp-enabled-clients 'ts-ls))
 
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
@@ -737,6 +753,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(dap-chrome yasnippet ws-butler which-key web-mode visual-fill-column typescript-mode treemacs-projectile treemacs-icons-dired terraform-mode telephone-line smartparens skeletor scss-mode scad-preview rjsx-mode restclient python-mode pytest pkg-info pipenv paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indentation highlight-indent-guides git-auto-commit-mode forge flycheck evil emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box beacon auto-virtualenv auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
