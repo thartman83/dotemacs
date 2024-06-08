@@ -79,8 +79,8 @@
 	      auto-package-update-interval 4)
 	(auto-package-update-maybe))
 
-(defvar *full-name* "Tom Hartman")
-(defvar *email* "thomas.lees.hartman@gmail.com")
+(defvar tlh/fullname "Tom Hartman")
+(defvar tlh/email "thomas.lees.hartman@gmail.com")
 
 (defun tlh/comment-lines (str beg end line-width)
   "Return a commented version of STR using BEG, END and LINE-WIDTH."
@@ -162,8 +162,13 @@
 
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
-  (ansi-color-apply-on-region compilation-filter-start (point)))
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+(setq compilation-scroll-output t)
+(setq compilation-auto-jump-to-first-error t)
 
 (use-package multiple-cursors
   :ensure t)
@@ -176,6 +181,11 @@
 
 (use-package beacon
 :init (beacon-mode 1))
+
+(use-package guru-mode
+  :hook (prog-mode . guru-mode)
+  :config
+  (setq guru-warn-only t))
 
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
@@ -243,7 +253,65 @@
 	    (dired-hide-details-mode 1)
 	    (display-line-numbers-mode 0)))
 
+(use-package substitute)
+
 (add-hook 'org-mode-hook 'turn-on-flyspell)
+
+(defun tlh/autoload-python-venv ()
+  (message (concat "Loading pyvenv " (projectile-project-root) "venv"))
+  (when (string= projectile-project-type "python-pip")
+    (pyenv-activate (concat (projectile-project-dir) "venv"))))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config
+  (add-hook 'projectile-after-switch-project-hook #'tlh/autoload-python-venv)
+  (projectile-mode)
+  ;; detect fastapi projects
+  (projectile-register-project-type
+   'python-fastapi
+   #'(lambda (project-root)
+       (str-in-file-p "fastapi" (concat project-root "requirements.txt")))
+   :project-file "requirements.txt"
+   :compile "uvicorn app.main:app --reload"
+   :test ""
+   :run "uvicorn app.main:app --reload"
+   :test-prefix "test_")
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ;; NOTE: Set this to the folder where you keep your Git repos!
+  (when (file-directory-p "~/projects/")
+    (setq projectile-project-search-path '("~/projects/")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+(use-package skeletor)
+
+(defconst tlh/notes-dir
+  "~/notes/"
+  "Default notes directory. This is where the bulk of my org files are located in one form or another.")
+
+(defconst tlh/project-notes-dir
+  "~/notes/projects/"
+  "Default location where project related notes are stored. This keeps them outside of the project space and allows for better capture options in conjunction with projectile."
+  )
+
+(defconst tlh/global-notes-dir
+  "~/notes/globals/"
+  "Catch all location of notes files: calendar, punchlist, etc."
+  )
+
+(defconst tlh/journal-dir
+  "~/notes/journal/"
+  "Location for org-roam to store daily notes.")
+
+(defconst tlh/org-templates-dir
+  (concat user-emacs-directory "org-templates/")
+  "Location for all org-templates.")
 
 (defun efs/org-mode-setup ()
   (org-indent-mode)
@@ -259,6 +327,7 @@
   ;; Right justifies tags on headers adjusting for a default line width of 80
   (org-tags-column -80)
   (org-agenda-tags-column -80)
+  (org-directory tlh/notes-dir)
   :config
   (auto-fill-mode)
   (setq org-startup-folded "fold")
@@ -272,7 +341,7 @@
 
   ;; Refile targets
   (setq org-refile-targets
-        '(("~/notes/globals/punchlist.org" :maxlevel . 1)))
+        '(((concat tlh/global-notes-dir "punchlist.org") :maxlevel . 1)))
   )
 
 (setf org-src-preserve-indentation t)
@@ -353,9 +422,9 @@
   :init
   (setq org-roam-v2-ack t)
   :custom
-  (org-roam-directory "~/notes")
-  (org-agenda-files '("~/notes/journal"
-		      "~/notes/globals/"))
+  (org-roam-directory tlh/notes-dir)
+  (org-agenda-files '(tlh/project-notes-dir
+                      tlh/global-notes-dir))
   (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
@@ -414,6 +483,56 @@
 
 (use-package org-make-toc)
 
+(defun tlh/org-project-file-path (project-name)
+  "Returns the full path of the project related org file."
+  (concat tlh/project-notes-dir project-name ".org"))
+
+(defun tlh/org-project-file-p (project-name)
+  "Returns t if `project-name`.org exists in the notes project directory."
+  (file-exists-p (tlh/org-project-file-path project-name)))
+
+(defun tlh/org-generate-project-notes-file (project-name)
+  "Generates a default project org file in the notes project directory."
+  (when (not (tlh/org-project-file-p project-name))
+    (f-touch (tlh/org-project-file-path project-name))
+    (with-temp-file (tlh/org-project-file-path project-name)
+      (insert (f-read (concat tlh/org-templates-dir "project-notes.org")))
+      (let ((substitute-fixed-letter-case t))
+        (substitute-target-in-buffer "%%TITLE%%" project-name)
+        (substitute-target-in-buffer "%%AUTHOR%%" tlh/fullname)))))
+
+(defun tlh/org-capture-project ()
+  "Capture project related notes and items.
+
+Automatically files the target in the project specific org file
+based on the current project of the calling buffer."
+  (interactive)
+  (let ((project-root (projectile-project-p))
+        (project-name (projectile-project-name)))
+    (when (not project-root)
+      (error "Not in a project file buffer."))
+
+    ;; Generate a default notes file if one doesn't already exist
+    (when (not (tlh/org-project-file-p project-name))
+      (tlh/org-generate-project-notes-file project-name))
+
+    ;; shadow the existing capture templates with project specific
+    ;; ones to be filed in the projects notes
+    (let ((org-capture-templates
+           `(("t" "Todo" entry
+              (file+headline ,(tlh/org-project-file-path project-name) "Tasks")
+              "* TODO %^{TaskTItle}\n %?\n")
+             ("b" "Bug" entry
+              (file+headline ,(tlh/org-project-file-path project-name) "Issues")
+              "* BUG %^{BugTitle}\n %?\n")
+             ("n" "Note" entry
+              (file+headline ,(tlh/org-project-file-path project-name) "Notes")
+              "* %^{NoteTitle}\n %?\n"))))
+      (org-capture))))
+
+;; C-c p n appears to be free
+(define-key projectile-mode-map (kbd "C-c p n") 'tlh/org-capture-project)
+
 (use-package ivy
   :diminish
   :bind (("C-s" . swiper)
@@ -463,6 +582,7 @@
     (lsp-enable-which-key-integration)))
 
 (use-package lsp-mode
+  :load-path "~/projects/lsp-mode/"
   :commands (lsp lsp-deferred)
   :hook (lsp-mode . efs/lsp-mode-setup)
   :init
@@ -521,38 +641,6 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
-(defun tlh/autoload-python-venv ()
-  (message (concat "Loading pyvenv " (projectile-project-root) "venv"))
-  (when (string= projectile-project-type "python-pip")
-    (pyenv-activate (concat (projectile-project-dir) "venv"))))
-
-(use-package projectile
-  :diminish projectile-mode
-  :config
-  (add-hook 'projectile-after-switch-project-hook #'tlh/autoload-python-venv)
-  (projectile-mode)
-  ;; detect fastapi projects
-  (projectile-register-project-type
-   'python-fastapi
-   #'(lambda (project-root)
-       (str-in-file-p "fastapi" (concat project-root "requirements.txt")))
-   :project-file "requirements.txt"
-   :compile "uvicorn app.main:app --reload"
-   :test ""
-   :run "uvicorn app.main:app --reload"
-   :test-prefix "test_")
-  :custom ((projectile-completion-system 'ivy))
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :init
-  ;; NOTE: Set this to the folder where you keep your Git repos!
-  (when (file-directory-p "~/projects/")
-    (setq projectile-project-search-path '("~/projects/")))
-  (setq projectile-switch-project-action #'projectile-dired))
-
-(use-package counsel-projectile
-  :config (counsel-projectile-mode))
-
 (use-package paredit
   :config
 
@@ -585,12 +673,28 @@
   (add-to-list 'lsp-enabled-clients 'jsts-ls))
 
 (use-package rjsx-mode
-  :mode "\\.tsx\\'"
+  :mode ("\\.tsx\\'")
   :hook ((rjsx-mode . lsp-deferred)
          (rjsx-mode . emmet-mode))
   :config
   (setq tab-width 2)
+  (setq js-indent-level 2)
   (add-to-list 'lsp-enabled-clients 'ts-ls))
+
+;; (with-eval-after-load 'lsp-mode
+;;   (lsp-register-client
+;;    (make-lsp-client
+;;     :new-connection (lsp-stdio-connection "mdx-language-server")
+;;     :activation-fn (lsp-activate-on "mdx")
+;;     :server-id 'mdx-language-server)))
+
+(use-package mdx-mode
+  :load-path "local/"
+  :mode ("\\.mdx\\'")
+  :hook ((mdx-mode . lsp-deferred)
+         (mdx-mode . emmet-mode))
+  :config
+  (add-to-list 'lsp-enabled-clients 'mdx-analyzer))
 
 (use-package json-mode
   :hook (json-mode . lsp-deferred)
@@ -683,8 +787,6 @@
 (use-package hcl-mode
   :mode "\\.tf\\'")
 
-(use-package skeletor)
-
 (use-package dockerfile-mode)
 
 (use-package docker-compose-mode
@@ -735,11 +837,13 @@
   :ensure t)
 
 (use-package yasnippet
-  :custom
-  (yas/root-directory '("~/.emacs.d/snippets"))
+  :ensure t
+  :hook ((prog-mode) . yas-minor-mode)
+  :bind ("C-<tab>" . yas-expand)
   :config
-  (yas-global-mode 1)
-  (mapc #'yas-load-directory yas/root-directory))
+  (progn
+    (add-to-list 'yas/root-directory '"~/.emacs.d/snippets")
+    (yas-reload-all)))
 
 (use-package restclient)
 
@@ -753,8 +857,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(dap-chrome yasnippet ws-butler which-key web-mode visual-fill-column typescript-mode treemacs-projectile treemacs-icons-dired terraform-mode telephone-line smartparens skeletor scss-mode scad-preview rjsx-mode restclient python-mode pytest pkg-info pipenv paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indentation highlight-indent-guides git-auto-commit-mode forge flycheck evil emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box beacon auto-virtualenv auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))

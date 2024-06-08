@@ -1,0 +1,12 @@
+#+TITLE: %%TITLE%%
+#+AUTHOR: %%AUTHOR%%
+#+TODO: TODO(t) INPROGRESS(i) | DONE(d)
+#+TODO: BUG(b) INDEV(i) | FIXED(f)
+
+* General
+
+* Tasks
+
+* Issues
+
+* Notes
