@@ -709,8 +709,8 @@ Setup org-roam note taking and file management. After loading the package, you c
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory tlh/notes-dir)
-  (org-agenda-files '(tlh/project-notes-dir
-                      tlh/global-notes-dir))
+  (org-agenda-files `(,tlh/project-notes-dir
+                      ,tlh/global-notes-dir))
   (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates

@@ -423,8 +423,8 @@
   (setq org-roam-v2-ack t)
   :custom
   (org-roam-directory tlh/notes-dir)
-  (org-agenda-files '(tlh/project-notes-dir
-                      tlh/global-notes-dir))
+  (org-agenda-files `(,tlh/project-notes-dir
+                      ,tlh/global-notes-dir))
   (org-roam-dailies-directory "journal/")
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
@@ -857,6 +857,8 @@ based on the current project of the calling buffer."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(dap-chrome yasnippet ws-butler which-key visual-fill-column typescript-mode treemacs-projectile treemacs-icons-dired terraform-mode telephone-line substitute smartparens skeletor scss-mode scad-preview rjsx-mode restclient python-mode pytest paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indent-guides guru-mode git-auto-commit-mode forge flycheck evil emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box beacon auto-virtualenv auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
