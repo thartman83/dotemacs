@@ -74,10 +74,11 @@
 
      (use-package auto-package-update
 	:ensure t
-	:config
-	(setq auto-package-update-delete-old-versions t
-	      auto-package-update-interval 4)
-	(auto-package-update-maybe))
+	;; :config
+	;; (setq auto-package-update-delete-old-versions t
+	;;       auto-package-update-interval 4)
+	;;(auto-package-update-maybe)
+  )
 
 (defvar tlh/fullname "Tom Hartman")
 (defvar tlh/email "thomas.lees.hartman@gmail.com")
@@ -102,7 +103,7 @@
   (and (f-exists-p file)
        (integerp (string-match-p needle (f-read-text file 'utf-8)))))
 
-(add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-8"))
+(add-to-list 'default-frame-alist '(font . "SauceCodePro Nerd Font Mono-10"))
 
 ;;(use-package doom-themes
 ;;  :init (load-theme 'doom-sourcerer t))
@@ -113,7 +114,7 @@
  (defun set-transparency (value)
    "Sets the transparency of the frame window. 0=transparent/100=opaque"
    (interactive "nTransparency Value 0 - 100 opaque:")
-   (set-frame-parameter (selected-frame) 'alpha value))
+   (set-frame-parameter (selected-frame) 'alpha-background value))
 
 ;; Transparency needs to be set when a frame is created for cases where we are using emacsclient instead of a new instance
 (defun new-frame-setup (frame)
@@ -128,7 +129,7 @@
 
 ;; Run when a new frame is created
 ;;(add-hook 'before-make-frame-functions 'new-frame-setup)
-(add-to-list 'after-make-frame-functions #'new-frame-setup)
+;;(add-to-list 'after-make-frame-functions #'new-frame-setup)
 
 (use-package mixed-pitch
   :hook (org-mode . mixed-pitch-mode))
@@ -267,6 +268,7 @@
   :config
   (add-hook 'projectile-after-switch-project-hook #'tlh/autoload-python-venv)
   (projectile-mode)
+
   ;; detect fastapi projects
   (projectile-register-project-type
    'python-fastapi
@@ -277,6 +279,28 @@
    :test ""
    :run "uvicorn app.main:app --reload"
    :test-prefix "test_")
+
+  ;; detect platformio projects (esp32 development)
+  (projectile-register-project-type
+   'platformio '("platformio.ini" "src" "lib" "test")
+   :project-file "platformio.ini"
+   :compile "pio run"
+   :test "pio test"
+   :src-dir '("src/" "lib/")
+   :test-dir '("test"))
+
+  (projectile-register-project-type
+   'vite-storybook
+   #'(lambda (project-root)
+       (and (file-exists-p (concat project-root "vite.config.ts"))
+            (file-exists-p (concat project-root ".storybook"))))
+   :project-file '("README.org")
+   :src-dir "src"
+   :test-dir ".storybook"
+   :compile "npx vite"
+   :test "npm run storybook"
+   :run "npx vite")
+
   :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
@@ -530,8 +554,25 @@ based on the current project of the calling buffer."
               "* %^{NoteTitle}\n %?\n"))))
       (org-capture))))
 
+(defun tlh/org-open-project-org ()
+  (interactive)
+  (let ((project-root (projectile-project-p))
+        (project-name (projectile-project-name)))
+    (when (not project-root)
+      (error "Not in a project file buffer."))
+
+    ;; Generate a default notes file if one doesn't already exist
+    (when (not (tlh/org-project-file-p project-name))
+      (tlh/org-generate-project-notes-file project-name))
+
+    (find-file (tlh/org-project-file-path project-name))))
+
+
+
+
 ;; C-c p n appears to be free
-(define-key projectile-mode-map (kbd "C-c p n") 'tlh/org-capture-project)
+(define-key projectile-command-map (kbd "n") 'tlh/org-capture-project)
+(define-key projectile-command-map (kbd "N") 'tlh/org-open-project-org)
 
 (use-package ivy
   :diminish
@@ -564,6 +605,10 @@ based on the current project of the calling buffer."
   :init
   (ivy-rich-mode 1))
 
+(use-package ivy-posframe
+  :config
+  (ivy-posframe-mode 1))
+
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -572,6 +617,14 @@ based on the current project of the calling buffer."
 ;; - https://magit.vc/manual/forge/Token-Creation.html#Token-Creation
 ;; - https://magit.vc/manual/ghub/Getting-Started.html#Getting-Started
 (use-package forge)
+
+(require 'notifications)
+(defun message-compilation-finished ()
+  (notifications-notify
+   :title "Compilation"
+   :body "Compilation finished"))
+
+(add-hook 'compilation-finish-functions #'message-compilation-finished 'compilation)
 
 (use-package flycheck)
 
@@ -584,18 +637,72 @@ based on the current project of the calling buffer."
 (use-package lsp-mode
   :load-path "~/projects/lsp-mode/"
   :commands (lsp lsp-deferred)
-  :hook (lsp-mode . efs/lsp-mode-setup)
+  :hook ((lsp-mode . efs/lsp-mode-setup)
+         (tsx-ts-mode
+          typescript-ts-mode
+          js-ts-mode) . lsp-deferred)
   :init
   (setq lsp-keymap-prefix "C-c s")  ;; Or 'C-l', 's-l'
-  :config
-  (lsp-enable-which-key-integration t))
+  (setq lsp-apply-edits-after-file-operations nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :custom
   (lsp-ui-doc-position 'bottom))
 
+(defun os/setup-install-grammars ()
+  "Install Tree-sitter grammars if they are absent."
+  (interactive)
+  (dolist (grammar
+           '((css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
+             (bash "https://github.com/tree-sitter/tree-sitter-bash")
+             (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
+             (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.2" "src"))
+             (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
+             (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
+             (go "https://github.com/tree-sitter/tree-sitter-go" "v0.20.0")
+             (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+             (make "https://github.com/alemuller/tree-sitter-make")
+             (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+             (cmake "https://github.com/uyha/tree-sitter-cmake")
+             (c "https://github.com/tree-sitter/tree-sitter-c")
+             (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+             (toml "https://github.com/tree-sitter/tree-sitter-toml")
+             (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
+             (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
+             (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
+             (prisma "https://github.com/victorhqc/tree-sitter-prisma")))
+    (add-to-list 'treesit-language-source-alist grammar)
+    ;; Only install `grammar' if we don't already have it
+    ;; installed. However, if you want to *update* a grammar then
+    ;; this obviously prevents that from happening.
+    (unless (treesit-language-available-p (car grammar))
+      (treesit-install-language-grammar (car grammar)))))
+
+(defun tlh/associate-treesit-modes ()
+  (interactive)
+  (dolist (mapping
+           '(;; (python-mode . python-ts-mode)
+             ;; (css-mode . css-ts-mode)
+             (typescript-mode . typescript-ts-mode)
+             (js-mode . typescript-ts-mode)
+             (js2-mode . typescript-ts-mode)
+             ;; (c-mode . c-ts-mode)
+             ;; (c++-mode . c++-ts-mode)
+             ;; (c-or-c++-mode . c-or-c++-ts-mode)
+             ;; (bash-mode . bash-ts-mode)
+             ;; (css-mode . css-ts-mode)
+             (json-mode . json-ts-mode)
+             (js-json-mode . json-ts-mode)
+             ;; (sh-mode . bash-ts-mode)
+             ;; (sh-base-mode . bash-ts-mode)
+             ))
+    (add-to-list 'major-mode-remap-alist mapping)))
+
 (use-package dap-mode
+  :config
+  (require 'dap-node)
+  (dap-node-setup)
   :custom
   (bind-keys :prefix "C-c d" :prefix-map debug-keymap
              ("t" . dap-breakpoint-toggle)
@@ -672,14 +779,26 @@ based on the current project of the calling buffer."
   (setq tab-width 2)
   (add-to-list 'lsp-enabled-clients 'jsts-ls))
 
-(use-package rjsx-mode
-  :mode ("\\.tsx\\'")
-  :hook ((rjsx-mode . lsp-deferred)
-         (rjsx-mode . emmet-mode))
-  :config
-  (setq tab-width 2)
-  (setq js-indent-level 2)
-  (add-to-list 'lsp-enabled-clients 'ts-ls))
+;; (use-package tsx-ts-mode
+;;   :mode ("\\.tsx\\'")
+;;   :hook (((tsx-ts-mode
+;;             typescript-ts-mode
+;;             js-ts-mode) . lsp-deferred))
+
+;;          ;; (rjsx-mode . lsp-deferred)
+;;          ;; (rjsx-mode . emmet-mode))
+;;   :config
+;;   (setq tab-width 2)
+;;   (setq js-indent-level 2)
+;;   (add-to-list 'lsp-enabled-clients 'ts-ls))
+
+;; (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
+
+;; (add-hook 'tsx-ts-mode 'lsp-deferred)
+;; (add-hook 'typescript-ts-mode 'lsp-deferred)
+;; (add-hook 'js-ts-mode 'lsp-deferred)
+
+;; (add-to-list 'lsp-enabled-clients 'ts-ls)
 
 ;; (with-eval-after-load 'lsp-mode
 ;;   (lsp-register-client
@@ -723,7 +842,7 @@ based on the current project of the calling buffer."
                             (flycheck-add-next-checker 'lsp 'python-flake8))))
   :custom
   (add-to-list 'lsp-enabled-clients 'pylsp)
-  (lsp-pylsp-plugins-pylint-enabled t)
+  (setf lsp-pylsp-plugins-pylint-enabled t)
   :config
   (require 'dap-python))
 
@@ -777,6 +896,15 @@ based on the current project of the calling buffer."
   (setq scss-indent-level 4)
   (add-to-list 'lsp-enabled-clients 'css-ls))
 
+(use-package platformio-mode
+  :config
+  (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\.pio\\'"))
+
+(use-package ccls
+  :hook (c-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-enabled-clients 'ccls))
+
 (use-package origami
   :config
   (global-origami-mode))
@@ -799,6 +927,8 @@ based on the current project of the calling buffer."
 (use-package kubernetes
   :ensure t
   :commands (kubernetes-overview)
+  :custom
+  (kubernetes-commands-display-buffer-function 'display-buffer)
   :config
   (setq kubernetes-poll-frequency 3600
         kubernetes-redraw-frequency 3600))
@@ -818,6 +948,7 @@ based on the current project of the calling buffer."
   (treemacs-fringe-indicator-mode 'always)
   (when treemacs-python-executable
     (treemacs-git-commit-diff-mode t))
+  (setf lsp-treemacs-error-list-expand-depth 4)
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
@@ -839,7 +970,9 @@ based on the current project of the calling buffer."
 (use-package yasnippet
   :ensure t
   :hook ((prog-mode) . yas-minor-mode)
-  :bind ("C-<tab>" . yas-expand)
+  :bind (("C-<tab>" . yas-expand)
+         :map yas-keymap
+         ("C-<tab>" . yas-next-field-or-maybe-expand))
   :config
   (progn
     (add-to-list 'yas/root-directory '"~/.emacs.d/snippets")
@@ -858,7 +991,7 @@ based on the current project of the calling buffer."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(dap-chrome yasnippet ws-butler which-key visual-fill-column typescript-mode treemacs-projectile treemacs-icons-dired terraform-mode telephone-line substitute smartparens skeletor scss-mode scad-preview rjsx-mode restclient python-mode pytest paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode ivy-rich highlight-indent-guides guru-mode git-auto-commit-mode forge flycheck evil emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box beacon auto-virtualenv auto-package-update all-the-icons-dired))
+   '(dap-chrome yasnippet ws-butler which-key visual-fill-column typescript-mode treemacs-projectile treemacs-icons-dired terraform-mode telephone-line substitute smartparens skeletor scss-mode scad-preview restclient pyvenv python-mode pytest platformio-mode paredit origami org-roam org-make-toc org-contrib org-bullets no-littering multiple-cursors mixed-pitch lua-mode lsp-ui kubernetes json-mode js2-mode ivy-rich ivy-posframe highlight-indent-guides guru-mode git-commit git-auto-commit-mode forge flycheck evil emmet-mode doom-themes dockerfile-mode docker-compose-mode docker dap-mode counsel-projectile company-box ccls beacon auto-virtualenv auto-package-update all-the-icons-dired))
  '(safe-local-variable-values
    '((gac-automatically-push-p . t)
      (gac-automatically-add-new-files-p . t))))
